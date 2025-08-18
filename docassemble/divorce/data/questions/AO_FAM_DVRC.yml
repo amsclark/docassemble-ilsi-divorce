@@ -1,0 +1,337 @@
+code: multi_user = True
+mandatory: true
+---
+features:
+  css:
+  - https://d34mmrz2ojoc57.cloudfront.net/documatecss.css
+  question back button: true
+  use catchall: true
+---
+modules:
+- docassemble.base.util
+- docassemble.numberstowords.numbers_to_words
+- docassemble.commalist.commalist
+- docassemble.mathops.math_ops
+- documate.base.yaml_functions
+---
+metadata:
+  sessions are unique: false
+  short title: AO_FAM_DVRC
+  title: AO_FAM_DVRC
+---
+code: |-
+  from documate.base.yaml_functions import load_data_manager_variables
+  load_data_manager_variables(url_args)
+initial: true
+---
+code: |-
+  letter_date
+  recipient_name
+  recipient_address
+  recipient_email
+  sender_name
+  sender_title
+  sender_email
+  case_specific_facts
+  recipient_salutation
+  recipient_last_name
+  county
+  minor_children_involved
+  number_of_children
+  separation
+  case_type_petitioner
+  property_or_debt
+  hbp_referral
+  income_disparity
+  international
+  military
+  publication
+  same_sex
+  pregnant
+  abuse
+  spouse_location
+  spouse_location_has_treaty
+  local_dv_agency
+  county_prosecutor_office_name
+  prosecutor_office_address
+  prosecutor_office_phone_number
+  wants_name_change
+  county_clerk_county_name
+  hsl_review_answers
+  hsl_final_screen
+mandatory: true
+question metadata:
+  hsl interview order: true
+---
+fields:
+- What is the date for the letter?: letter_date
+  datatype: date
+- What is the recipient's full name?: recipient_name
+  datatype: text
+- What is the recipient's full mailing address?: recipient_address
+  datatype: area
+- What is the recipient's email address? (Optional): recipient_email
+  datatype: text
+  required: false
+- What is the sender's full name?: sender_name
+  datatype: text
+- What is the sender's title (e.g., Attorney at Law)?: sender_title
+  datatype: text
+- What is the sender's email?: sender_email
+  datatype: text
+- Please provide a brief, one-paragraph summary of the client's specific situation.: case_specific_facts
+  datatype: area
+- What is the recipient's salutation?: recipient_salutation
+  datatype: text
+- What is the recipient's last name?: recipient_last_name
+  datatype: text
+question: Template Selection and General Information
+validation code: |-
+  if not defined('letter_date') or not letter_date:
+    letter_date = DAEmpty()
+---
+fields:
+- In which Indiana county is the case being filed?: county
+  choices:
+  - Allen: Allen
+  - Bartholomew: Bartholomew
+  - Clark: Clark
+  - Delaware: Delaware
+  - Elkhart: Elkhart
+  - Hamilton: Hamilton
+  - Johnson: Johnson
+  - Lake: Lake
+  - Lawrence: Lawrence
+  - Marion: Marion
+  - Monroe: Monroe
+  - Other: Other
+  datatype: dropdown
+- Are minor children involved?: minor_children_involved
+  datatype: yesnoradio
+- How many minor children are involved?: number_of_children
+  datatype: text
+- Does the case involve a legal separation?: separation
+  datatype: yesnoradio
+- Is the client the petitioner?: case_type_petitioner
+  datatype: yesnoradio
+- Are there any marital properties or debts to be divided?: property_or_debt
+  datatype: yesnoradio
+- Is this case being referred to the Heartland Pro Bono Project?: hbp_referral
+  datatype: yesnoradio
+  show if:
+    is: Marion
+    variable: county
+- Is there a significant income disparity between the spouses where the client is unemployed/underemployed?: income_disparity
+  datatype: yesnoradio
+  show if:
+    is: Marion
+    variable: county
+- Is the party that needs to be served in another country?: international
+  datatype: yesnoradio
+- Is the party that needs to be served in the military?: military
+  datatype: yesnoradio
+- Does the respondent need to be served by publication?: publication
+  datatype: yesnoradio
+- Does this case involve a same-sex marriage?: same_sex
+  datatype: yesnoradio
+- Is either party pregnant?: pregnant
+  datatype: yesnoradio
+- Does the case involve abuse?: abuse
+  datatype: yesnoradio
+- What is their specific location (e.g., Nigeria, Germany, Mexico)?: spouse_location
+  datatype: text
+  show if:
+    is: true
+    variable: international
+- If the spouse is in a foreign country, does that country have a child support treaty with the U.S.?: spouse_location_has_treaty
+  datatype: yesnoradio
+  show if:
+    is: true
+    variable: international
+- If abuse is a factor, what is the name and contact information for the local domestic violence agency?: local_dv_agency
+  datatype: area
+  show if:
+    is: true
+    variable: abuse
+- What is the name of the county prosecutor's office?: county_prosecutor_office_name
+  datatype: text
+  show if:
+    is: true
+    variable: minor_children_involved
+- What is the address of the county prosecutor's office?: prosecutor_office_address
+  datatype: area
+  show if:
+    is: true
+    variable: minor_children_involved
+- What is the phone number of the county prosecutor's office?: prosecutor_office_phone_number
+  datatype: text
+  show if:
+    is: true
+    variable: minor_children_involved
+- Does the client wish to change their name as part of the divorce?: wants_name_change
+  datatype: yesnoradio
+- What is the name of the county for the clerk's office?: county_clerk_county_name
+  datatype: text
+question: Detail Questions
+validation code: |-
+  if county != 'Marion':
+    hbp_referral = ''
+  if county != 'Marion':
+    income_disparity = ''
+  if international != True:
+    spouse_location = ''
+  if international != True:
+    spouse_location_has_treaty = ''
+  if abuse != True:
+    local_dv_agency = ''
+  if minor_children_involved != True:
+    county_prosecutor_office_name = ''
+  if minor_children_involved != True:
+    prosecutor_office_address = ''
+  if minor_children_involved != True:
+    prosecutor_office_phone_number = ''
+---
+field: hsl_review_answers
+prevent going back: true
+question: ${ word("Please review your answers below.") }
+review:
+- note: '####Template Selection and General Information'
+- Change Answer: letter_date
+  button: '**What is the date for the letter?**: ${ letter_date }'
+- Change Answer: recipient_name
+  button: '**What is the recipient''s full name?**: ${ recipient_name }'
+- Change Answer: recipient_address
+  button: '**What is the recipient''s full mailing address?**: ${ recipient_address
+    }'
+- Change Answer: recipient_email
+  button: '**What is the recipient''s email address? (Optional)**: ${ recipient_email
+    }'
+- Change Answer: sender_name
+  button: '**What is the sender''s full name?**: ${ sender_name }'
+- Change Answer: sender_title
+  button: '**What is the sender''s title (e.g., Attorney at Law)?**: ${ sender_title
+    }'
+- Change Answer: sender_email
+  button: '**What is the sender''s email?**: ${ sender_email }'
+- Change Answer: case_specific_facts
+  button: '**Please provide a brief, one-paragraph summary of the client''s specific
+    situation.**: ${ case_specific_facts }'
+- Change Answer: recipient_salutation
+  button: '**What is the recipient''s salutation?**: ${ recipient_salutation }'
+- Change Answer: recipient_last_name
+  button: '**What is the recipient''s last name?**: ${ recipient_last_name }'
+- note: '####Detail Questions'
+- Change Answer: county
+  button: '**In which Indiana county is the case being filed?**: ${ county }'
+- Change Answer: minor_children_involved
+  button: '**Are minor children involved?**: ${ minor_children_involved }'
+- Change Answer: number_of_children
+  button: '**How many minor children are involved?**: ${ number_of_children }'
+- Change Answer: separation
+  button: '**Does the case involve a legal separation?**: ${ separation }'
+- Change Answer: case_type_petitioner
+  button: '**Is the client the petitioner?**: ${ case_type_petitioner }'
+- Change Answer: property_or_debt
+  button: '**Are there any marital properties or debts to be divided?**: ${ property_or_debt
+    }'
+- Change Answer: hbp_referral
+  button: '**Is this case being referred to the Heartland Pro Bono Project?**: ${
+    hbp_referral }'
+  show if: county == 'Marion'
+- Change Answer: income_disparity
+  button: '**Is there a significant income disparity between the spouses where the
+    client is unemployed/underemployed?**: ${ income_disparity }'
+  show if: county == 'Marion'
+- Change Answer: international
+  button: '**Is the party that needs to be served in another country?**: ${ international
+    }'
+- Change Answer: military
+  button: '**Is the party that needs to be served in the military?**: ${ military
+    }'
+- Change Answer: publication
+  button: '**Does the respondent need to be served by publication?**: ${ publication
+    }'
+- Change Answer: same_sex
+  button: '**Does this case involve a same-sex marriage?**: ${ same_sex }'
+- Change Answer: pregnant
+  button: '**Is either party pregnant?**: ${ pregnant }'
+- Change Answer: abuse
+  button: '**Does the case involve abuse?**: ${ abuse }'
+- Change Answer: spouse_location
+  button: '**What is their specific location (e.g., Nigeria, Germany, Mexico)?**:
+    ${ spouse_location }'
+  show if: international == True
+- Change Answer: spouse_location_has_treaty
+  button: '**If the spouse is in a foreign country, does that country have a child
+    support treaty with the U.S.?**: ${ spouse_location_has_treaty }'
+  show if: international == True
+- Change Answer: local_dv_agency
+  button: '**If abuse is a factor, what is the name and contact information for the
+    local domestic violence agency?**: ${ local_dv_agency }'
+  show if: abuse == True
+- Change Answer: county_prosecutor_office_name
+  button: '**What is the name of the county prosecutor''s office?**: ${ county_prosecutor_office_name
+    }'
+  show if: minor_children_involved == True
+- Change Answer: prosecutor_office_address
+  button: '**What is the address of the county prosecutor''s office?**: ${ prosecutor_office_address
+    }'
+  show if: minor_children_involved == True
+- Change Answer: prosecutor_office_phone_number
+  button: '**What is the phone number of the county prosecutor''s office?**: ${ prosecutor_office_phone_number
+    }'
+  show if: minor_children_involved == True
+- Change Answer: wants_name_change
+  button: '**Does the client wish to change their name as part of the divorce?**:
+    ${ wants_name_change }'
+- Change Answer: county_clerk_county_name
+  button: '**What is the name of the county for the clerk''s office?**: ${ county_clerk_county_name
+    }'
+skip undefined: false
+---
+code: completed_at = current_datetime()
+---
+code: |-
+  #hslJsonState
+  #{"formula_groups": [], "output_document_conditions": {"condition_groups": [], "default_documents": []}, "output_documents": [{"display_formats": [], "fields": {}, "filename": "AO_FAM_DVRC_divorce.docx", "generate_multiple_for": "", "id": "8b0ff396-2e71-43c6-a718-0e8575b8b56a", "name": "AO FAM DVRC Divorce", "variable_name": "AO_FAM_DVRC_divorce"}], "pages": [{"dataname": null, "fields": [{"choices": [], "composed_values": [], "datatype": "date", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "letter_date"}, {"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "recipient_name"}, {"choices": [], "composed_values": [], "datatype": "area", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "recipient_address"}, {"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "recipient_email"}, {"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "sender_name"}, {"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "sender_title"}, {"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "sender_email"}, {"choices": [], "composed_values": [], "datatype": "area", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "case_specific_facts"}, {"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "recipient_salutation"}, {"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "recipient_last_name"}], "invisible_logic": null, "is_invisible_logic_question": false, "is_repeating_question": false, "title": "Template Selection and General Information"}, {"dataname": null, "fields": [{"choices": ["Allen", "Bartholomew", "Clark", "Delaware", "Elkhart", "Hamilton", "Johnson", "Lake", "Lawrence", "Marion", "Monroe", "Other"], "composed_values": [], "datatype": "dropdown", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "county"}, {"choices": [], "composed_values": [], "datatype": "yesnoradio", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "minor_children_involved"}, {"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "number_of_children"}, {"choices": [], "composed_values": [], "datatype": "yesnoradio", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "separation"}, {"choices": [], "composed_values": [], "datatype": "yesnoradio", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "case_type_petitioner"}, {"choices": [], "composed_values": [], "datatype": "yesnoradio", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "property_or_debt"}, {"choices": [], "composed_values": [], "datatype": "yesnoradio", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "hbp_referral"}, {"choices": [], "composed_values": [], "datatype": "yesnoradio", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "income_disparity"}, {"choices": [], "composed_values": [], "datatype": "yesnoradio", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "international"}, {"choices": [], "composed_values": [], "datatype": "yesnoradio", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "military"}, {"choices": [], "composed_values": [], "datatype": "yesnoradio", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "publication"}, {"choices": [], "composed_values": [], "datatype": "yesnoradio", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "same_sex"}, {"choices": [], "composed_values": [], "datatype": "yesnoradio", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "pregnant"}, {"choices": [], "composed_values": [], "datatype": "yesnoradio", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "abuse"}, {"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "spouse_location"}, {"choices": [], "composed_values": [], "datatype": "yesnoradio", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "spouse_location_has_treaty"}, {"choices": [], "composed_values": [], "datatype": "area", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "local_dv_agency"}, {"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "county_prosecutor_office_name"}, {"choices": [], "composed_values": [], "datatype": "area", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "prosecutor_office_address"}, {"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "prosecutor_office_phone_number"}, {"choices": [], "composed_values": [], "datatype": "yesnoradio", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "wants_name_change"}, {"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "county_clerk_county_name"}], "invisible_logic": null, "is_invisible_logic_question": false, "is_repeating_question": false, "title": "Detail Questions"}], "sections": [], "settings": {"access_permissions": {"allowed_email_addresses": [], "allowed_email_domains": [], "is_public": true, "single_use": false}, "custom_css_link": "", "custom_messages": {"continue_later_email_body": "To resume your workflow,", "continue_later_email_link_text": "click here", "continue_later_email_signature": "", "continue_later_email_title": "Your workflow", "continue_later_link_text": "Save link to continue later", "continue_later_message": "Enter your email below, and we'll send you a link to continue this workflow.", "continue_later_title": "Save and continue later", "document_completion_message": "Here are your documents!", "docusign_email_body": "Please DocuSign ${template_variables.docusign_file_names}\n\nThank You, ${template_variables.organization_name}", "docusign_email_subject": "Complete with DocuSign: ${template_variables.docusign_file_count} Documents from ${template_variables.organization_name}", "email_body": "Thank you for taking the time to fill everything out!", "email_not_sent_message": "Your information was not submitted.", "email_sent_message": "Thank you. Your information has been submitted.", "email_subject": "Here are your documents!", "final_page_email_body": "Your documents ${template_variables.file_names}, are attached", "final_page_email_subject": "${template_variables.file_names}", "hidden_document_completion_message": "Ok, all done."}, "documents_emailed": false, "email_docx": false, "email_file_uploads": false, "email_recipients": [], "hide_documents_from_user": false, "include_continue_later_link": false, "integrations": {}, "language": "", "skip_final_review_page": false}, "version": 2}
+---
+attachment:
+  docx template file: AO_FAM_DVRC_divorce.docx
+  filename: AO FAM DVRC Divorce
+  name: AO FAM DVRC Divorce
+  variable name: AO_FAM_DVRC_divorce
+question metadata:
+  id: 8b0ff396-2e71-43c6-a718-0e8575b8b56a
+---
+code: hsl_attachments = [AO_FAM_DVRC_divorce]
+need:
+- hsl_review_answers
+only sets:
+- hsl_attachments
+---
+code: |-
+  x.value = DAEmpty(str=f'[VARIABLE `{x.instanceName}` NOT FOUND]')
+  define(x.instanceName, x.value)
+field: x.value
+generic object: DACatchAll
+---
+code: template_variables = TemplateVariables()
+only sets:
+- template_variables
+---
+content: Your documents ${template_variables.file_names}, are attached
+subject: ${template_variables.file_names}
+template: hsl_final_page_email_template
+---
+allow downloading: true
+attachment code: generate_attachments_for_display(hsl_attachments)
+email template: hsl_final_page_email_template
+event: hsl_final_screen
+mandatory: true
+need:
+- hsl_attachments
+question: Here are your documents!
+under: |-
+  % if is_within_bundle():
+  [Return to bundle overview](${get_bundle_page_url()}){: .btn .btn-primary .btn-da .float-right}
+  % endif

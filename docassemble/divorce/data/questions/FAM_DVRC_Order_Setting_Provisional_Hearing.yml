@@ -1,0 +1,159 @@
+code: multi_user = True
+mandatory: true
+---
+features:
+  css:
+  - https://d34mmrz2ojoc57.cloudfront.net/documatecss.css
+  question back button: true
+  use catchall: true
+---
+modules:
+- docassemble.base.util
+- docassemble.numberstowords.numbers_to_words
+- docassemble.commalist.commalist
+- docassemble.mathops.math_ops
+- documate.base.yaml_functions
+---
+metadata:
+  sessions are unique: false
+  short title: FAM_DVRC_Order_Setting_Provisional_Hearing
+  title: FAM_DVRC_Order_Setting_Provisional_Hearing
+---
+code: |-
+  from documate.base.yaml_functions import load_data_manager_variables
+  load_data_manager_variables(url_args)
+initial: true
+---
+code: |-
+  court_name
+  county_name
+  case_number
+  petitioner_name
+  respondent_name
+  hearing_party
+  hearing_date
+  distribution_list
+  so_ordered_date
+  judge_title
+  hsl_review_answers
+  hsl_final_screen
+mandatory: true
+question metadata:
+  hsl interview order: true
+---
+fields:
+- What is the name of the court?: court_name
+  datatype: text
+- What is the name of the county?: county_name
+  datatype: text
+- What is the case number?: case_number
+  datatype: text
+question: Case Information
+---
+fields:
+- What is the name of the petitioner?: petitioner_name
+  datatype: text
+- What is the name of the respondent?: respondent_name
+  datatype: text
+question: Party Information
+---
+fields:
+- Who is the party requesting the hearing?: hearing_party
+  choices:
+  - Petitioner: Petitioner
+  - Respondent: Respondent
+  datatype: dropdown
+- What date is the hearing date being set for?: hearing_date
+  datatype: date
+- List the Names of the Attorneys and pro se litigants who will receive a copy of the hearing order: distribution_list
+  datatype: area
+question: Hearing Details
+validation code: |-
+  if not defined('hearing_date') or not hearing_date:
+    hearing_date = DAEmpty()
+---
+fields:
+- What is the date the order was signed (SO ORDERED)?: so_ordered_date
+  datatype: text
+- What is the judge's title?: judge_title
+  datatype: text
+question: Judge Information
+---
+field: hsl_review_answers
+prevent going back: true
+question: ${ word("Please review your answers below.") }
+review:
+- note: '####Case Information'
+- Change Answer: court_name
+  button: '**What is the name of the court?**: ${ court_name }'
+- Change Answer: county_name
+  button: '**What is the name of the county?**: ${ county_name }'
+- Change Answer: case_number
+  button: '**What is the case number?**: ${ case_number }'
+- note: '####Party Information'
+- Change Answer: petitioner_name
+  button: '**What is the name of the petitioner?**: ${ petitioner_name }'
+- Change Answer: respondent_name
+  button: '**What is the name of the respondent?**: ${ respondent_name }'
+- note: '####Hearing Details'
+- Change Answer: hearing_party
+  button: '**Who is the party requesting the hearing?**: ${ hearing_party }'
+- Change Answer: hearing_date
+  button: '**What date is the hearing date being set for?**: ${ hearing_date }'
+- Change Answer: distribution_list
+  button: '**List the Names of the Attorneys and pro se litigants who will receive
+    a copy of the hearing order**: ${ distribution_list }'
+- note: '####Judge Information'
+- Change Answer: so_ordered_date
+  button: '**What is the date the order was signed (SO ORDERED)?**: ${ so_ordered_date
+    }'
+- Change Answer: judge_title
+  button: '**What is the judge''s title?**: ${ judge_title }'
+skip undefined: false
+---
+code: completed_at = current_datetime()
+---
+code: |-
+  #hslJsonState
+  #{"formula_groups": [], "output_document_conditions": {"condition_groups": [], "default_documents": []}, "output_documents": [{"display_formats": [], "fields": {}, "filename": "Order_Setting_Provisional_Hearing_blueprint_20250811_185410.docx", "generate_multiple_for": "", "id": "df5b5255-87f4-45a9-a855-e3779dd475b6", "name": "Order Setting Provisional Hearing", "variable_name": "Order_Setting_Provisional_Hearing"}], "pages": [{"dataname": null, "fields": [{"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "court_name"}, {"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "county_name"}, {"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "case_number"}], "invisible_logic": null, "is_invisible_logic_question": false, "is_repeating_question": false, "title": "Case Information"}, {"dataname": null, "fields": [{"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "petitioner_name"}, {"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "respondent_name"}], "invisible_logic": null, "is_invisible_logic_question": false, "is_repeating_question": false, "title": "Party Information"}, {"dataname": null, "fields": [{"choices": ["Petitioner", "Respondent"], "composed_values": [], "datatype": "dropdown", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "hearing_party"}, {"choices": [], "composed_values": [], "datatype": "date", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "hearing_date"}, {"choices": [], "composed_values": [], "datatype": "area", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "distribution_list"}], "invisible_logic": null, "is_invisible_logic_question": false, "is_repeating_question": false, "title": "Hearing Details"}, {"dataname": null, "fields": [{"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "so_ordered_date"}, {"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "judge_title"}], "invisible_logic": null, "is_invisible_logic_question": false, "is_repeating_question": false, "title": "Judge Information"}], "sections": [], "settings": {"access_permissions": {"allowed_email_addresses": [], "allowed_email_domains": [], "is_public": true, "single_use": false}, "custom_css_link": "", "custom_messages": {"continue_later_email_body": "To resume your workflow,", "continue_later_email_link_text": "click here", "continue_later_email_signature": "", "continue_later_email_title": "Your workflow", "continue_later_link_text": "Save link to continue later", "continue_later_message": "Enter your email below, and we'll send you a link to continue this workflow.", "continue_later_title": "Save and continue later", "document_completion_message": "Here are your documents!", "docusign_email_body": "Please DocuSign ${template_variables.docusign_file_names}\n\nThank You, ${template_variables.organization_name}", "docusign_email_subject": "Complete with DocuSign: ${template_variables.docusign_file_count} Documents from ${template_variables.organization_name}", "email_body": "Thank you for taking the time to fill everything out!", "email_not_sent_message": "Your information was not submitted.", "email_sent_message": "Thank you. Your information has been submitted.", "email_subject": "Here are your documents!", "final_page_email_body": "Your documents ${template_variables.file_names}, are attached", "final_page_email_subject": "${template_variables.file_names}", "hidden_document_completion_message": "Ok, all done."}, "documents_emailed": false, "email_docx": false, "email_file_uploads": false, "email_recipients": [], "hide_documents_from_user": false, "include_continue_later_link": false, "integrations": {}, "language": "", "skip_final_review_page": false}, "version": 2}
+---
+attachment:
+  docx template file: Order_Setting_Provisional_Hearing_blueprint_20250811_185410.docx
+  filename: Order Setting Provisional Hearing
+  name: Order Setting Provisional Hearing
+  variable name: Order_Setting_Provisional_Hearing
+question metadata:
+  id: df5b5255-87f4-45a9-a855-e3779dd475b6
+---
+code: hsl_attachments = [Order_Setting_Provisional_Hearing]
+need:
+- hsl_review_answers
+only sets:
+- hsl_attachments
+---
+code: |-
+  x.value = DAEmpty(str=f'[VARIABLE `{x.instanceName}` NOT FOUND]')
+  define(x.instanceName, x.value)
+field: x.value
+generic object: DACatchAll
+---
+code: template_variables = TemplateVariables()
+only sets:
+- template_variables
+---
+content: Your documents ${template_variables.file_names}, are attached
+subject: ${template_variables.file_names}
+template: hsl_final_page_email_template
+---
+allow downloading: true
+attachment code: generate_attachments_for_display(hsl_attachments)
+email template: hsl_final_page_email_template
+event: hsl_final_screen
+mandatory: true
+need:
+- hsl_attachments
+question: Here are your documents!
+under: |-
+  % if is_within_bundle():
+  [Return to bundle overview](${get_bundle_page_url()}){: .btn .btn-primary .btn-da .float-right}
+  % endif

@@ -1,0 +1,269 @@
+code: multi_user = True
+mandatory: true
+---
+features:
+  css:
+  - https://d34mmrz2ojoc57.cloudfront.net/documatecss.css
+  question back button: true
+  use catchall: true
+---
+modules:
+- docassemble.base.util
+- docassemble.numberstowords.numbers_to_words
+- docassemble.commalist.commalist
+- docassemble.mathops.math_ops
+- documate.base.yaml_functions
+---
+metadata:
+  sessions are unique: false
+  short title: FAM_DVRC_SUMMONS
+  title: FAM_DVRC_SUMMONS
+---
+code: |-
+  from documate.base.yaml_functions import load_data_manager_variables
+  load_data_manager_variables(url_args)
+initial: true
+---
+code: |-
+  court_name
+  county_name
+  case_number
+  petitioner_name
+  respondent_name
+  respondent_street_address
+  respondent_city_state_zip_code
+  manner_of_service
+  other_manner_of_service
+  attorney_for_petitioner_name
+  attorney_for_petitioner_address
+  attorney_for_petitioner_phone_number
+  acknowledgment_service_year
+  return_service_mailed_day
+  return_service_mailed_month
+  return_service_received_day
+  return_service_received_month
+  return_service_dated
+  service_day
+  service_month
+  person_served_at_residence
+  not_found_day
+  not_found_month
+  summons_came_to_hand_day
+  summons_came_to_hand_month
+  hsl_review_answers
+  hsl_final_screen
+mandatory: true
+question metadata:
+  hsl interview order: true
+---
+fields:
+- What is the name of the court?: court_name
+  datatype: text
+- What is the name of the county?: county_name
+  datatype: text
+- What is the case number?: case_number
+  datatype: text
+question: Case Information
+---
+fields:
+- What is the name of the petitioner?: petitioner_name
+  datatype: text
+question: Petitioner Information
+---
+fields:
+- What is the name of the respondent?: respondent_name
+  datatype: text
+- What is the street address of the respondent?: respondent_street_address
+  datatype: text
+- What are the city, state, and zip code of the respondent's address?: respondent_city_state_zip_code
+  datatype: text
+question: Respondent Information
+---
+fields:
+- What manner of service is designated?: manner_of_service
+  choices:
+  - Registered Mail: Registered Mail
+  - By Sheriff as provided by law: By Sheriff as provided by law
+  - Certified Mail: Certified Mail
+  - Other: Other
+  datatype: dropdown
+- What is the 'Other' manner of service?: other_manner_of_service
+  datatype: text
+  show if:
+    is: Other
+    variable: manner_of_service
+question: Clerk's Issuance
+validation code: |-
+  if manner_of_service != 'Other':
+    other_manner_of_service = ''
+---
+fields:
+- What is the name of the attorney for petitioner?: attorney_for_petitioner_name
+  datatype: text
+- What is the address of the attorney for petitioner?: attorney_for_petitioner_address
+  datatype: text
+- What is the phone number of the attorney for petitioner?: attorney_for_petitioner_phone_number
+  datatype: text
+question: Attorney Information
+---
+fields:
+- What is the year of the acknowledgment of service?: acknowledgment_service_year
+  datatype: number
+- What is the day (number) the summons was mailed (return of service)?: return_service_mailed_day
+  datatype: number
+- What is the month the summons was mailed (return of service)?: return_service_mailed_month
+  datatype: text
+- What is the day (number) the return receipt was received (return of service)?: return_service_received_day
+  datatype: number
+- What is the month the return receipt was received (return of service)?: return_service_received_month
+  datatype: text
+- What is the date for return of service of summons by mail?: return_service_dated
+  datatype: date
+- What is the day of service?: service_day
+  datatype: number
+- What is the month of service?: service_month
+  datatype: text
+- What is the name of the person of suitable age and discretion at the residence?: person_served_at_residence
+  datatype: text
+- What is the day the respondent was not found?: not_found_day
+  datatype: number
+- What is the month the respondent was not found?: not_found_month
+  datatype: text
+question: Return of Service
+validation code: |-
+  if not defined('return_service_dated') or not return_service_dated:
+    return_service_dated = DAEmpty()
+---
+fields:
+- What is the day the summons came to hand?: summons_came_to_hand_day
+  datatype: number
+- What is the month the summons came to hand?: summons_came_to_hand_month
+  datatype: text
+question: Service Details
+---
+field: hsl_review_answers
+prevent going back: true
+question: ${ word("Please review your answers below.") }
+review:
+- note: '####Case Information'
+- Change Answer: court_name
+  button: '**What is the name of the court?**: ${ court_name }'
+- Change Answer: county_name
+  button: '**What is the name of the county?**: ${ county_name }'
+- Change Answer: case_number
+  button: '**What is the case number?**: ${ case_number }'
+- note: '####Petitioner Information'
+- Change Answer: petitioner_name
+  button: '**What is the name of the petitioner?**: ${ petitioner_name }'
+- note: '####Respondent Information'
+- Change Answer: respondent_name
+  button: '**What is the name of the respondent?**: ${ respondent_name }'
+- Change Answer: respondent_street_address
+  button: '**What is the street address of the respondent?**: ${ respondent_street_address
+    }'
+- Change Answer: respondent_city_state_zip_code
+  button: '**What are the city, state, and zip code of the respondent''s address?**:
+    ${ respondent_city_state_zip_code }'
+- note: '####Clerk''s Issuance'
+- Change Answer: manner_of_service
+  button: '**What manner of service is designated?**: ${ manner_of_service }'
+- Change Answer: other_manner_of_service
+  button: '**What is the ''Other'' manner of service?**: ${ other_manner_of_service
+    }'
+  show if: manner_of_service == 'Other'
+- note: '####Attorney Information'
+- Change Answer: attorney_for_petitioner_name
+  button: '**What is the name of the attorney for petitioner?**: ${ attorney_for_petitioner_name
+    }'
+- Change Answer: attorney_for_petitioner_address
+  button: '**What is the address of the attorney for petitioner?**: ${ attorney_for_petitioner_address
+    }'
+- Change Answer: attorney_for_petitioner_phone_number
+  button: '**What is the phone number of the attorney for petitioner?**: ${ attorney_for_petitioner_phone_number
+    }'
+- note: '####Return of Service'
+- Change Answer: acknowledgment_service_year
+  button: '**What is the year of the acknowledgment of service?**: ${ acknowledgment_service_year
+    }'
+- Change Answer: return_service_mailed_day
+  button: '**What is the day (number) the summons was mailed (return of service)?**:
+    ${ return_service_mailed_day }'
+- Change Answer: return_service_mailed_month
+  button: '**What is the month the summons was mailed (return of service)?**: ${ return_service_mailed_month
+    }'
+- Change Answer: return_service_received_day
+  button: '**What is the day (number) the return receipt was received (return of service)?**:
+    ${ return_service_received_day }'
+- Change Answer: return_service_received_month
+  button: '**What is the month the return receipt was received (return of service)?**:
+    ${ return_service_received_month }'
+- Change Answer: return_service_dated
+  button: '**What is the date for return of service of summons by mail?**: ${ return_service_dated
+    }'
+- Change Answer: service_day
+  button: '**What is the day of service?**: ${ service_day }'
+- Change Answer: service_month
+  button: '**What is the month of service?**: ${ service_month }'
+- Change Answer: person_served_at_residence
+  button: '**What is the name of the person of suitable age and discretion at the
+    residence?**: ${ person_served_at_residence }'
+- Change Answer: not_found_day
+  button: '**What is the day the respondent was not found?**: ${ not_found_day }'
+- Change Answer: not_found_month
+  button: '**What is the month the respondent was not found?**: ${ not_found_month
+    }'
+- note: '####Service Details'
+- Change Answer: summons_came_to_hand_day
+  button: '**What is the day the summons came to hand?**: ${ summons_came_to_hand_day
+    }'
+- Change Answer: summons_came_to_hand_month
+  button: '**What is the month the summons came to hand?**: ${ summons_came_to_hand_month
+    }'
+skip undefined: false
+---
+code: completed_at = current_datetime()
+---
+code: |-
+  #hslJsonState
+  #{"formula_groups": [], "output_document_conditions": {"condition_groups": [], "default_documents": []}, "output_documents": [{"display_formats": [], "fields": {}, "filename": "FAM_DVRC_SUMMONS_blueprint_20250811_165910.docx", "generate_multiple_for": "", "id": "2a4fe2a5-041f-4f5e-88e5-afb5ff13fa31", "name": "FAM DVRC SUMMONS", "variable_name": "FAM_DVRC_SUMMONS"}], "pages": [{"dataname": null, "fields": [{"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "court_name"}, {"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "county_name"}, {"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "case_number"}], "invisible_logic": null, "is_invisible_logic_question": false, "is_repeating_question": false, "title": "Case Information"}, {"dataname": null, "fields": [{"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "petitioner_name"}], "invisible_logic": null, "is_invisible_logic_question": false, "is_repeating_question": false, "title": "Petitioner Information"}, {"dataname": null, "fields": [{"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "respondent_name"}, {"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "respondent_street_address"}, {"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "respondent_city_state_zip_code"}], "invisible_logic": null, "is_invisible_logic_question": false, "is_repeating_question": false, "title": "Respondent Information"}, {"dataname": null, "fields": [{"choices": ["Registered Mail", "By Sheriff as provided by law", "Certified Mail", "Other"], "composed_values": [], "datatype": "dropdown", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "manner_of_service"}, {"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "other_manner_of_service"}], "invisible_logic": null, "is_invisible_logic_question": false, "is_repeating_question": false, "title": "Clerk's Issuance"}, {"dataname": null, "fields": [{"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "attorney_for_petitioner_name"}, {"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "attorney_for_petitioner_address"}, {"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "attorney_for_petitioner_phone_number"}], "invisible_logic": null, "is_invisible_logic_question": false, "is_repeating_question": false, "title": "Attorney Information"}, {"dataname": null, "fields": [{"choices": [], "composed_values": [], "datatype": "number", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "acknowledgment_service_year"}, {"choices": [], "composed_values": [], "datatype": "number", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "return_service_mailed_day"}, {"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "return_service_mailed_month"}, {"choices": [], "composed_values": [], "datatype": "number", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "return_service_received_day"}, {"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "return_service_received_month"}, {"choices": [], "composed_values": [], "datatype": "date", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "return_service_dated"}, {"choices": [], "composed_values": [], "datatype": "number", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "service_day"}, {"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "service_month"}, {"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "person_served_at_residence"}, {"choices": [], "composed_values": [], "datatype": "number", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "not_found_day"}, {"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "not_found_month"}], "invisible_logic": null, "is_invisible_logic_question": false, "is_repeating_question": false, "title": "Return of Service"}, {"dataname": null, "fields": [{"choices": [], "composed_values": [], "datatype": "number", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "summons_came_to_hand_day"}, {"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "summons_came_to_hand_month"}], "invisible_logic": null, "is_invisible_logic_question": false, "is_repeating_question": false, "title": "Service Details"}], "sections": [], "settings": {"access_permissions": {"allowed_email_addresses": [], "allowed_email_domains": [], "is_public": true, "single_use": false}, "custom_css_link": "", "custom_messages": {"continue_later_email_body": "To resume your workflow,", "continue_later_email_link_text": "click here", "continue_later_email_signature": "", "continue_later_email_title": "Your workflow", "continue_later_link_text": "Save link to continue later", "continue_later_message": "Enter your email below, and we'll send you a link to continue this workflow.", "continue_later_title": "Save and continue later", "document_completion_message": "Here are your documents!", "docusign_email_body": "Please DocuSign ${template_variables.docusign_file_names}\n\nThank You, ${template_variables.organization_name}", "docusign_email_subject": "Complete with DocuSign: ${template_variables.docusign_file_count} Documents from ${template_variables.organization_name}", "email_body": "Thank you for taking the time to fill everything out!", "email_not_sent_message": "Your information was not submitted.", "email_sent_message": "Thank you. Your information has been submitted.", "email_subject": "Here are your documents!", "final_page_email_body": "Your documents ${template_variables.file_names}, are attached", "final_page_email_subject": "${template_variables.file_names}", "hidden_document_completion_message": "Ok, all done."}, "documents_emailed": false, "email_docx": false, "email_file_uploads": false, "email_recipients": [], "hide_documents_from_user": false, "include_continue_later_link": false, "integrations": {}, "language": "", "skip_final_review_page": false}, "version": 2}
+---
+attachment:
+  docx template file: FAM_DVRC_SUMMONS_blueprint_20250811_165910.docx
+  filename: FAM DVRC SUMMONS
+  name: FAM DVRC SUMMONS
+  variable name: FAM_DVRC_SUMMONS
+question metadata:
+  id: 2a4fe2a5-041f-4f5e-88e5-afb5ff13fa31
+---
+code: hsl_attachments = [FAM_DVRC_SUMMONS]
+need:
+- hsl_review_answers
+only sets:
+- hsl_attachments
+---
+code: |-
+  x.value = DAEmpty(str=f'[VARIABLE `{x.instanceName}` NOT FOUND]')
+  define(x.instanceName, x.value)
+field: x.value
+generic object: DACatchAll
+---
+code: template_variables = TemplateVariables()
+only sets:
+- template_variables
+---
+content: Your documents ${template_variables.file_names}, are attached
+subject: ${template_variables.file_names}
+template: hsl_final_page_email_template
+---
+allow downloading: true
+attachment code: generate_attachments_for_display(hsl_attachments)
+email template: hsl_final_page_email_template
+event: hsl_final_screen
+mandatory: true
+need:
+- hsl_attachments
+question: Here are your documents!
+under: |-
+  % if is_within_bundle():
+  [Return to bundle overview](${get_bundle_page_url()}){: .btn .btn-primary .btn-da .float-right}
+  % endif

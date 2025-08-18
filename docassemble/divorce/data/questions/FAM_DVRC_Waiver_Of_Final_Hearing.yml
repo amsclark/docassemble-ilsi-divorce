@@ -1,0 +1,179 @@
+code: multi_user = True
+mandatory: true
+---
+features:
+  css:
+  - https://d34mmrz2ojoc57.cloudfront.net/documatecss.css
+  question back button: true
+  use catchall: true
+---
+modules:
+- docassemble.base.util
+- docassemble.numberstowords.numbers_to_words
+- docassemble.commalist.commalist
+- docassemble.mathops.math_ops
+- documate.base.yaml_functions
+---
+metadata:
+  sessions are unique: false
+  short title: FAM_DVRC_Waiver_Of_Final_Hearing
+  title: FAM_DVRC_Waiver_Of_Final_Hearing
+---
+code: |-
+  from documate.base.yaml_functions import load_data_manager_variables
+  load_data_manager_variables(url_args)
+initial: true
+---
+code: |-
+  court_name
+  county_name
+  case_number
+  agreement_title
+  petitioner_name
+  respondent_name
+  respondent_service_date
+  firm_name
+  petitioner_counsel_name
+  respondent_counsel_name
+  petitioner_counsel_attorney_number
+  respondent_counsel_attorney_number
+  hsl_review_answers
+  hsl_final_screen
+mandatory: true
+question metadata:
+  hsl interview order: true
+---
+fields:
+- What is the name of the court?: court_name
+  datatype: text
+- What is the name of the county?: county_name
+  datatype: text
+- What is the case number?: case_number
+  datatype: text
+- What is the title of the agreement?: agreement_title
+  choices:
+  - Agreement Regarding Settlement of Property and Debts: Agreement Regarding Settlement
+      of Property and Debts
+  - Agreement Regarding Settlement of Property and Debts and Custody and Support of Minor Children: Agreement
+      Regarding Settlement of Property and Debts and Custody and Support of Minor
+      Children
+  datatype: dropdown
+question: Court and Case Information
+---
+fields:
+- What is the name of the petitioner?: petitioner_name
+  datatype: text
+- What is the name of the respondent?: respondent_name
+  datatype: text
+question: Party Information
+---
+fields:
+- On what date was the petition filed and served to the respondent?: respondent_service_date
+  datatype: date
+question: Service and Filing Details
+validation code: |-
+  if not defined('respondent_service_date') or not respondent_service_date:
+    respondent_service_date = DAEmpty()
+---
+fields:
+- What is the name of the law firm?: firm_name
+  datatype: text
+  required: false
+- What is the name of the petitioner's counsel?: petitioner_counsel_name
+  datatype: text
+  required: false
+- What is the name of the respondent's counsel?: respondent_counsel_name
+  datatype: text
+- What is the attorney number of the petitioner's counsel?: petitioner_counsel_attorney_number
+  datatype: text
+  required: false
+- What is the attorney number of the respondent's counsel?: respondent_counsel_attorney_number
+  datatype: text
+  required: false
+question: Attorney Information
+---
+field: hsl_review_answers
+prevent going back: true
+question: ${ word("Please review your answers below.") }
+review:
+- note: '####Court and Case Information'
+- Change Answer: court_name
+  button: '**What is the name of the court?**: ${ court_name }'
+- Change Answer: county_name
+  button: '**What is the name of the county?**: ${ county_name }'
+- Change Answer: case_number
+  button: '**What is the case number?**: ${ case_number }'
+- Change Answer: agreement_title
+  button: '**What is the title of the agreement?**: ${ agreement_title }'
+- note: '####Party Information'
+- Change Answer: petitioner_name
+  button: '**What is the name of the petitioner?**: ${ petitioner_name }'
+- Change Answer: respondent_name
+  button: '**What is the name of the respondent?**: ${ respondent_name }'
+- note: '####Service and Filing Details'
+- Change Answer: respondent_service_date
+  button: '**On what date was the petition filed and served to the respondent?**:
+    ${ respondent_service_date }'
+- note: '####Attorney Information'
+- Change Answer: firm_name
+  button: '**What is the name of the law firm?**: ${ firm_name }'
+- Change Answer: petitioner_counsel_name
+  button: '**What is the name of the petitioner''s counsel?**: ${ petitioner_counsel_name
+    }'
+- Change Answer: respondent_counsel_name
+  button: '**What is the name of the respondent''s counsel?**: ${ respondent_counsel_name
+    }'
+- Change Answer: petitioner_counsel_attorney_number
+  button: '**What is the attorney number of the petitioner''s counsel?**: ${ petitioner_counsel_attorney_number
+    }'
+- Change Answer: respondent_counsel_attorney_number
+  button: '**What is the attorney number of the respondent''s counsel?**: ${ respondent_counsel_attorney_number
+    }'
+skip undefined: false
+---
+code: completed_at = current_datetime()
+---
+code: |-
+  #hslJsonState
+  #{"formula_groups": [], "output_document_conditions": {"condition_groups": [], "default_documents": []}, "output_documents": [{"display_formats": [], "fields": {}, "filename": "Waiver_of_Final_Hearing_2024_blueprint_20250811_125151.docx", "generate_multiple_for": "", "id": "df0db1f5-5788-4dcc-8e3a-c8c6518e7079", "name": "Waiver Of Final Hearing 2024", "variable_name": "Waiver_of_Final_Hearing_2024"}], "pages": [{"dataname": null, "fields": [{"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "court_name"}, {"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "county_name"}, {"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "case_number"}, {"choices": ["Agreement Regarding Settlement of Property and Debts", "Agreement Regarding Settlement of Property and Debts and Custody and Support of Minor Children"], "composed_values": [], "datatype": "dropdown", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "agreement_title"}], "invisible_logic": null, "is_invisible_logic_question": false, "is_repeating_question": false, "title": "Court and Case Information"}, {"dataname": null, "fields": [{"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "petitioner_name"}, {"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "respondent_name"}], "invisible_logic": null, "is_invisible_logic_question": false, "is_repeating_question": false, "title": "Party Information"}, {"dataname": null, "fields": [{"choices": [], "composed_values": [], "datatype": "date", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "respondent_service_date"}], "invisible_logic": null, "is_invisible_logic_question": false, "is_repeating_question": false, "title": "Service and Filing Details"}, {"dataname": null, "fields": [{"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "firm_name"}, {"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "petitioner_counsel_name"}, {"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "respondent_counsel_name"}, {"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "petitioner_counsel_attorney_number"}, {"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "respondent_counsel_attorney_number"}], "invisible_logic": null, "is_invisible_logic_question": false, "is_repeating_question": false, "title": "Attorney Information"}], "sections": [], "settings": {"access_permissions": {"allowed_email_addresses": [], "allowed_email_domains": [], "is_public": true, "single_use": false}, "custom_css_link": "", "custom_messages": {"continue_later_email_body": "To resume your workflow,", "continue_later_email_link_text": "click here", "continue_later_email_signature": "", "continue_later_email_title": "Your workflow", "continue_later_link_text": "Save link to continue later", "continue_later_message": "Enter your email below, and we'll send you a link to continue this workflow.", "continue_later_title": "Save and continue later", "document_completion_message": "Here are your documents!", "docusign_email_body": "Please DocuSign ${template_variables.docusign_file_names}\n\nThank You, ${template_variables.organization_name}", "docusign_email_subject": "Complete with DocuSign: ${template_variables.docusign_file_count} Documents from ${template_variables.organization_name}", "email_body": "Thank you for taking the time to fill everything out!", "email_not_sent_message": "Your information was not submitted.", "email_sent_message": "Thank you. Your information has been submitted.", "email_subject": "Here are your documents!", "final_page_email_body": "Your documents ${template_variables.file_names}, are attached", "final_page_email_subject": "${template_variables.file_names}", "hidden_document_completion_message": "Ok, all done."}, "documents_emailed": false, "email_docx": false, "email_file_uploads": false, "email_recipients": [], "hide_documents_from_user": false, "include_continue_later_link": false, "integrations": {}, "language": "", "skip_final_review_page": false}, "version": 2}
+---
+attachment:
+  docx template file: Waiver_of_Final_Hearing_2024_blueprint_20250811_125151.docx
+  filename: Waiver Of Final Hearing 2024
+  name: Waiver Of Final Hearing 2024
+  variable name: Waiver_of_Final_Hearing_2024
+question metadata:
+  id: df0db1f5-5788-4dcc-8e3a-c8c6518e7079
+---
+code: hsl_attachments = [Waiver_of_Final_Hearing_2024]
+need:
+- hsl_review_answers
+only sets:
+- hsl_attachments
+---
+code: |-
+  x.value = DAEmpty(str=f'[VARIABLE `{x.instanceName}` NOT FOUND]')
+  define(x.instanceName, x.value)
+field: x.value
+generic object: DACatchAll
+---
+code: template_variables = TemplateVariables()
+only sets:
+- template_variables
+---
+content: Your documents ${template_variables.file_names}, are attached
+subject: ${template_variables.file_names}
+template: hsl_final_page_email_template
+---
+allow downloading: true
+attachment code: generate_attachments_for_display(hsl_attachments)
+email template: hsl_final_page_email_template
+event: hsl_final_screen
+mandatory: true
+need:
+- hsl_attachments
+question: Here are your documents!
+under: |-
+  % if is_within_bundle():
+  [Return to bundle overview](${get_bundle_page_url()}){: .btn .btn-primary .btn-da .float-right}
+  % endif

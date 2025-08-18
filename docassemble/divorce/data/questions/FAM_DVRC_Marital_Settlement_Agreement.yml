@@ -1,0 +1,1284 @@
+code: multi_user = True
+mandatory: true
+---
+features:
+  css:
+  - https://d34mmrz2ojoc57.cloudfront.net/documatecss.css
+  question back button: true
+  use catchall: true
+---
+modules:
+- docassemble.base.util
+- docassemble.numberstowords.numbers_to_words
+- docassemble.commalist.commalist
+- docassemble.mathops.math_ops
+- documate.base.yaml_functions
+---
+metadata:
+  sessions are unique: false
+  short title: FAM_DVRC_Marital_Settlement_Agreement
+  title: FAM_DVRC_Marital_Settlement_Agreement
+---
+code: |-
+  from documate.base.yaml_functions import load_data_manager_variables
+  load_data_manager_variables(url_args)
+initial: true
+---
+code: |-
+  court_name
+  case_number
+  county_name
+  local_rule_exchange_income_info
+  petitioner_document_title
+  respondent_document_title
+  petitioner_name
+  respondent_name
+  minor_children_involved
+  number_of_children
+  joint_or_sole
+  party_getting_kids_custody
+  children_names_and_ages
+  party_getting_visitation
+  visitation_details_option
+  visitation_date_begin
+  child_support_payor
+  child_support_payee
+  child_support_amount_weekly
+  child_support_payor_gross_income_weekly
+  child_support_payee_gross_income_weekly
+  support_arrearage_owed
+  support_arrearage_amount
+  support_arrearage_option
+  withholding_option
+  protection_order
+  property_owner_quit_claiming
+  personal_property_delivery_possessor_pronoun
+  attorney_role
+  a_party_owns_real_estate
+  real_estate_division_options
+  quitclaim_deadline
+  property_description
+  property_street_address
+  property_owner_relinquishing
+  property_owner_retaining
+  mortgage_on_property
+  mortgage_balance
+  mortgage_account_last_three_digits
+  mortgage_balance_date
+  mortgage_lender_name
+  points_above_prime
+  calendar_year_reporting_begins
+  net_proceeds_percentage_relinquishing
+  net_proceeds_percentage_retaining
+  asking_price_reduction_initial_amount
+  asking_price_reduction_recurring_amount
+  personal_property_option
+  p_to_r_property_exchange
+  personal_property_list_p_to_r
+  r_to_p_property_exchange
+  personal_property_list_r_to_p
+  addl_prop_section
+  remaining_retrieval_clause
+  addl_prop_retaining
+  addl_prop_relinquishing
+  remaining_property_storage_location
+  remaining_property_retrieval_days
+  property_equalization_judgment
+  equalization_payor
+  equalization_payee
+  equalization_payment_amount
+  equalization_trigger_event
+  equalization_payment_due_days
+  vehicle_transfer
+  vehicle_owner_retaining
+  vehicle_owner_relinquishing
+  motor_vehicle_description
+  vehicle_description
+  non_party_vehicle_co_owner
+  non_party_vehicle_co_owner_name
+  vehicle_lender_name
+  debt_division_option
+  petitioner_assuming_debts
+  p_debt_assumption_amount
+  p_debt_assumption_creditor
+  respondent_assuming_debts
+  r_debt_assumption_amount
+  r_debt_assumption_creditor
+  page_condition_1928657136
+  insured_party
+  life_insurance_amount
+  first_medical_bills_excess
+  second_medical_bills_excess
+  uninsured_medical_bills_first_amount
+  further_medical_expenses_percentage
+  tax_treatment_option
+  taxable_year_joint_return
+  firm_name
+  attorney_signature
+  attorney_name
+  attorney_bar_number
+  firm_address
+  attorney_phone_number
+  attorney_email
+  hsl_invisible_logic_0
+  hsl_invisible_logic_1
+  hsl_review_answers
+  hsl_final_screen
+mandatory: true
+question metadata:
+  hsl interview order: true
+---
+fields:
+- What is the name of the court?: court_name
+  datatype: text
+- What is the case number?: case_number
+  datatype: text
+- What is the name of the county?: county_name
+  datatype: text
+- ? Does this county have a Local Rule requiring that parties exchange income information
+    for the previous tax years, including the most recent employment check stub showing
+    year-to-date earnings and tax returns on alternate years beginning the year after
+    the decree is issued?
+  : local_rule_exchange_income_info
+  datatype: yesnoradio
+question: Case Information
+---
+fields:
+- What is the document title for the petitioner (e.g., Husband, Wife, Spouse 1)?: petitioner_document_title
+  choices:
+  - Husband: Husband
+  - Wife: Wife
+  - Spouse 1: Spouse 1
+  datatype: dropdown
+- What is the document title for the respondent (e.g., Husband, Wife, Spouse 2)?: respondent_document_title
+  choices:
+  - Husband: Husband
+  - Wife: Wife
+  - Spouse 2: Spouse 2
+  datatype: dropdown
+- What is the name of the petitioner?: petitioner_name
+  datatype: text
+- What is the name of the respondent?: respondent_name
+  datatype: text
+question: Party Information
+---
+fields:
+- Do the parties have minor children together that were born of the marriage?: minor_children_involved
+  datatype: yesnoradio
+- How many minor children do the parties have together that were born of the marriage?: number_of_children
+  datatype: integer
+  show if:
+    is: true
+    variable: minor_children_involved
+- Will the parties agree to joint custody or to sole custody?: joint_or_sole
+  choices:
+  - Joint: Joint
+  - Sole: Sole
+  datatype: dropdown
+  show if:
+    is: true
+    variable: minor_children_involved
+- Which party is getting custody of the kids?: party_getting_kids_custody
+  choices:
+  - Petitioner: Petitioner
+  - Respondent: Respondent
+  datatype: dropdown
+  show if:
+    is: true
+    variable: minor_children_involved
+- What are the names and ages of the minor child(ren)?: children_names_and_ages
+  datatype: area
+  show if:
+    is: true
+    variable: minor_children_involved
+- Which party is getting visitation only of the kids?: party_getting_visitation
+  choices:
+  - Petitioner: Petitioner
+  - Respondent: Respondent
+  datatype: dropdown
+  show if:
+    is: true
+    variable: minor_children_involved
+- ? |-
+    This workflow can generate a parenting time / visitation clause. Here are the three options:
+
+    Option 1: alternate weekends from 6 p.m. Friday evenings until 6 p.m. Sunday evenings
+    Option 2: pursuant to the Indiana Parenting Time Guidelines.
+    Option 3: as agreed by the parties
+  : visitation_details_option
+  choices:
+  - Option 1: Option 1
+  - Option 2: Option 2
+  - Option 3: Option 3
+  datatype: dropdown
+  show if:
+    is: Sole
+    variable: joint_or_sole
+- What date will visitations begin?: visitation_date_begin
+  datatype: date
+  show if:
+    is: Sole
+    variable: joint_or_sole
+- Which party will pay child support?: child_support_payor
+  choices:
+  - Petitioner: Petitioner
+  - Respondent: Respondent
+  datatype: dropdown
+  show if:
+    is: Sole
+    variable: joint_or_sole
+- Which party will receive child support?: child_support_payee
+  choices:
+  - Petitioner: Petitioner
+  - Respondent: Respondent
+  datatype: dropdown
+  show if:
+    is: Sole
+    variable: joint_or_sole
+- What is the weekly child support payment amount?: child_support_amount_weekly
+  datatype: number
+  show if:
+    is: Sole
+    variable: joint_or_sole
+- What is the weekly gross income of the child support payor?: child_support_payor_gross_income_weekly
+  datatype: number
+  show if:
+    is: Sole
+    variable: joint_or_sole
+- What is the weekly gross income of the child support payee?: child_support_payee_gross_income_weekly
+  datatype: number
+  show if:
+    is: Sole
+    variable: joint_or_sole
+- Is any support arrearage owed?: support_arrearage_owed
+  datatype: yesnoradio
+- What is the amount of support arrearage owed?: support_arrearage_amount
+  datatype: number
+  show if:
+    is: true
+    variable: support_arrearage_owed
+- ? "This workflow has the ability to insert a paragraphs related to child support\
+    \ arrearages. Please pick one of the following options:\n\nOption 1: A fixed dollar\
+    \ amount of arrears is specified and agreed upon. That amount is reduced to judgment\
+    \ and becomes immediately due and payable at the time of finalizing the dissolution.\n\
+    \nOption 2: If the party is in arrears as of the date the case is submitted to\
+    \ the Court, the Clerk\u2019s records will determine the amount. That amount is\
+    \ reduced to judgment and becomes immediately payable.\n\nOption 3: Same as Option\
+    \ 2, but adds preservation language: the Clerk-determined arrearage is reduced\
+    \ to judgment and explicitly preserved and maintained.\n\nOption 4 (Kosciusko\
+    \ County-specific): If the party is in arrears as of the date of finalization,\
+    \ the arrearage is preserved in the final decree dissolving the marriage."
+  : support_arrearage_option
+  choices:
+  - Option 1: Option 1
+  - Option 2: Option 2
+  - Option 3: Option 3
+  - Option 4: Option 4
+  datatype: dropdown
+  show if:
+    is: true
+    variable: support_arrearage_owed
+- ? |-
+    This workflow has the ability to insert a paragraphs related to income withholding. Please pick one of the following options:
+
+    Option 1: .  The parties recognize that income withholding heretofore activated herein shall remain activated for the withholding of current support and delinquencies and arrearages.
+
+    Option 2: An income withholding order for the withholding of child support obligations will be entered as a separate order herein.
+  : withholding_option
+  choices:
+  - Option 1: Option 1
+  - Option 2: Option 2
+  datatype: dropdown
+  show if:
+    is: true
+    variable: support_arrearage_owed
+- Is there a protection order in place?: protection_order
+  datatype: yesnoradio
+question: Child Support and Related Financials
+validation code: |-
+  if not defined('visitation_date_begin') or not visitation_date_begin:
+    visitation_date_begin = DAEmpty()
+  if minor_children_involved != True:
+    number_of_children = 0
+  if minor_children_involved != True:
+    joint_or_sole = ''
+  if minor_children_involved != True:
+    party_getting_kids_custody = ''
+  if minor_children_involved != True:
+    children_names_and_ages = ''
+  if minor_children_involved != True:
+    party_getting_visitation = ''
+  if joint_or_sole != 'Sole':
+    visitation_details_option = ''
+  if joint_or_sole != 'Sole':
+    visitation_date_begin = DAEmpty()
+  if joint_or_sole != 'Sole':
+    child_support_payor = ''
+  if joint_or_sole != 'Sole':
+    child_support_payee = ''
+  if joint_or_sole != 'Sole':
+    child_support_amount_weekly = 0
+  if joint_or_sole != 'Sole':
+    child_support_payor_gross_income_weekly = 0
+  if joint_or_sole != 'Sole':
+    child_support_payee_gross_income_weekly = 0
+  if support_arrearage_owed != True:
+    support_arrearage_amount = 0
+  if support_arrearage_owed != True:
+    support_arrearage_option = ''
+  if support_arrearage_owed != True:
+    withholding_option = ''
+---
+fields:
+- Which spouse is agreeing to quit claim their rights in the real estate?: property_owner_quit_claiming
+  datatype: text
+- What is the pronoun for the party who will hold the delivered property?: personal_property_delivery_possessor_pronoun
+  datatype: text
+- What is the role of the attorney drafting the agreement?: attorney_role
+  choices:
+  - Attorney for Petitioner: Attorney for Petitioner
+  - Attorney for Respondent: Attorney for Respondent
+  datatype: dropdown
+question: Voluntary Execution and Legal Representation
+---
+fields:
+- Is either party the owner of a legal or equitable interest in any real estate?: a_party_owns_real_estate
+  datatype: yesnoradio
+- ? "This interview can help prepare two alternative options for real estate division.\
+    \ \n\nOne option is simpler and more immediate, involving a straightforward quitclaim\
+    \ without refinancing or sale contingencies, and accomplishes a clean break with\
+    \ minimal ongoing obligations. \n\nThe other option includes refinancing efforts,\
+    \ sale contingencies, and is a more structured, long-term arrangement. Please\
+    \ choose one."
+  : real_estate_division_options
+  choices:
+  - Straightforward Quitclaim: Straightforward Quitclaim
+  - More structured arrangement: More structured arrangement
+  datatype: dropdown
+  show if:
+    is: true
+    variable: a_party_owns_real_estate
+- 'When will the quitclaim be effected? ': quitclaim_deadline
+  choices:
+  - prior to the final hearing held herein;: prior to the final hearing held herein;
+  - within ten (10) days of the Court approval of this document;: within ten (10)
+      days of the Court approval of this document;
+  datatype: dropdown
+  show if:
+    is: Straightforward Quitclaim
+    variable: real_estate_division_options
+- What is the legal description of the property to be transferred?: property_description
+  datatype: text
+  show if:
+    is: true
+    variable: a_party_owns_real_estate
+- What is the street address of the property to be transferred?: property_street_address
+  datatype: text
+  show if:
+    is: true
+    variable: a_party_owns_real_estate
+- What is the party that will be relinquishing ownership?: property_owner_relinquishing
+  choices:
+  - Petitioner: Petitioner
+  - Respondent: Respondent
+  datatype: dropdown
+- Which party will retain/receive the property?: property_owner_retaining
+  choices:
+  - Petitioner: Petitioner
+  - Respondent: Respondent
+  datatype: dropdown
+  show if:
+    is: true
+    variable: a_party_owns_real_estate
+- Is there a mortgage on the property?: mortgage_on_property
+  datatype: yesnoradio
+  show if:
+    is: true
+    variable: a_party_owns_real_estate
+- What is the mortgage balance?: mortgage_balance
+  datatype: number
+  show if:
+    is: true
+    variable: mortgage_on_property
+- What are the last three digits of the mortgage account?: mortgage_account_last_three_digits
+  datatype: text
+  show if:
+    is: true
+    variable: mortgage_on_property
+- 'As of what date is the mortgage balance equal to the above stated amount? ': mortgage_balance_date
+  datatype: date
+  show if:
+    is: true
+    variable: mortgage_on_property
+- What is the name of the mortgage lender?: mortgage_lender_name
+  datatype: text
+  show if:
+    is: true
+    variable: mortgage_on_property
+- ? The division of property may require mortgage refinancing to remove the party
+    relinquishing the property from the title. In this case, how many points above
+    the prime rate is the upper limit for the new mortgage rate?
+  : points_above_prime
+  datatype: integer
+  show if:
+    is: More structured arrangement
+    variable: real_estate_division_options
+- ? The division of property may require annual reporting of efforts to refinance
+    the mortgage. In this case, reporting should begin at the end of which calendar
+    year?
+  : calendar_year_reporting_begins
+  datatype: integer
+  show if:
+    is: More structured arrangement
+    variable: real_estate_division_options
+- ? The division of property may require selling the property and dividing the sale
+    proceeds. In this case, what percentage of the proceeds should be allocated to
+    the party who relinquished their ownership interest before the sale?
+  : net_proceeds_percentage_relinquishing
+  datatype: integer
+  show if:
+    is: More structured arrangement
+    variable: real_estate_division_options
+- ? The division of property may require selling the property and dividing the sale
+    proceeds. In this case, what percentage of the proceeds should be allocated to
+    the party who relinquished their ownership interest before the sale? Percentages
+    should total 100%.
+  : net_proceeds_percentage_retaining
+  datatype: integer
+  show if:
+    is: More structured arrangement
+    variable: real_estate_division_options
+- ? The division of property may require selling the property and dividing the sale
+    proceeds. If it does not sell within the first six months, how much should the
+    price be reduced, expressed as a dollar amount?
+  : asking_price_reduction_initial_amount
+  datatype: integer
+  show if:
+    is: More structured arrangement
+    variable: real_estate_division_options
+- ? If it does not sell after the first reduction, it will be reduced further every
+    six months. By how much should the price be further reduced every six months,
+    expressed as a dollar amount?
+  : asking_price_reduction_recurring_amount
+  datatype: integer
+  show if:
+    is: More structured arrangement
+    variable: real_estate_division_options
+question: Real Estate Division
+validation code: |-
+  if not defined('mortgage_balance_date') or not mortgage_balance_date:
+    mortgage_balance_date = DAEmpty()
+  if a_party_owns_real_estate != True:
+    real_estate_division_options = ''
+  if real_estate_division_options != 'Straightforward Quitclaim':
+    quitclaim_deadline = ''
+  if a_party_owns_real_estate != True:
+    property_description = ''
+  if a_party_owns_real_estate != True:
+    property_street_address = ''
+  if a_party_owns_real_estate != True:
+    property_owner_retaining = ''
+  if a_party_owns_real_estate != True:
+    mortgage_on_property = ''
+  if mortgage_on_property != True:
+    mortgage_balance = 0
+  if mortgage_on_property != True:
+    mortgage_account_last_three_digits = ''
+  if mortgage_on_property != True:
+    mortgage_balance_date = DAEmpty()
+  if mortgage_on_property != True:
+    mortgage_lender_name = ''
+  if real_estate_division_options != 'More structured arrangement':
+    points_above_prime = 0
+  if real_estate_division_options != 'More structured arrangement':
+    calendar_year_reporting_begins = 0
+  if real_estate_division_options != 'More structured arrangement':
+    net_proceeds_percentage_relinquishing = 0
+  if real_estate_division_options != 'More structured arrangement':
+    net_proceeds_percentage_retaining = 0
+  if real_estate_division_options != 'More structured arrangement':
+    asking_price_reduction_initial_amount = 0
+  if real_estate_division_options != 'More structured arrangement':
+    asking_price_reduction_recurring_amount = 0
+---
+fields:
+- ? This workflow can generate two different paragraph options for division of personal
+    property. One simple option stating that the division is already complete and
+    a more complex one that includes a list of property to exchange and a timeline.
+    Which one would you like?
+  : personal_property_option
+  choices:
+  - Simple: Simple
+  - Complex: Complex
+  datatype: dropdown
+- Does the Petitioner need to return property to Respondent?: p_to_r_property_exchange
+  datatype: yesnoradio
+  show if:
+    is: Complex
+    variable: personal_property_option
+- What is the list of personal property to be delivered by the petitioner to the respondent?: personal_property_list_p_to_r
+  datatype: area
+  show if:
+    is: true
+    variable: p_to_r_property_exchange
+- Does the Respondent need to return property to Petitioner?: r_to_p_property_exchange
+  datatype: yesnoradio
+  show if:
+    is: Complex
+    variable: personal_property_option
+- What is the list of personal property to be delivered by the Respondent to the Petitioner?: personal_property_list_r_to_p
+  datatype: area
+  show if:
+    is: true
+    variable: r_to_p_property_exchange
+- ? 'This workflow can generate an additional section on exchanging household furnishings
+    and other remaining personal property. Do you want to include this section? '
+  : addl_prop_section
+  datatype: yesnoradio
+  show if:
+    is: Complex
+    variable: personal_property_option
+- Do you also want to include language on timing and location of the retrieval?: remaining_retrieval_clause
+  datatype: yesnoradio
+- Which party will be receiving/retaining remaining household furnishings and remaining personal property?: addl_prop_retaining
+  choices:
+  - Petitioner: Petitioner
+  - Respondent: Respondent
+  datatype: dropdown
+  show if:
+    is: true
+    variable: remaining_retrieval_clause
+- Which party will be relinquishing remaining household furnishings and remaining personal property?: addl_prop_relinquishing
+  choices:
+  - Petitioner: Petitioner
+  - Respondent: Respondent
+  datatype: dropdown
+  show if:
+    is: true
+    variable: remaining_retrieval_clause
+- What is the location for the exchange of additional household furnishings and property?: remaining_property_storage_location
+  datatype: text
+  show if:
+    is: true
+    variable: remaining_retrieval_clause
+- How many days should they have to retrieve the propertyt?: remaining_property_retrieval_days
+  datatype: integer
+  show if:
+    is: true
+    variable: remaining_retrieval_clause
+- This workflow can include a section on a property equalization judgment. Do you want to include it?: property_equalization_judgment
+  datatype: yesnoradio
+  show if:
+    is: Complex
+    variable: personal_property_option
+- Which party should pay equalization money?: equalization_payor
+  choices:
+  - Petitioner: Petitioner
+  - Respondent: Respondent
+  datatype: dropdown
+  show if:
+    is: true
+    variable: property_equalization_judgment
+- Which party should receive equalization money?: equalization_payee
+  choices:
+  - Petitioner: Petitioner
+  - Respondent: Respondent
+  datatype: dropdown
+  show if:
+    is: true
+    variable: property_equalization_judgment
+- How much should be paid?: equalization_payment_amount
+  datatype: integer
+- ? What should the trigger event for the payment be? E.g., . start of employment
+    with a company or by a certain date, whichever occurs first.
+  : equalization_trigger_event
+  datatype: text
+  show if:
+    is: true
+    variable: property_equalization_judgment
+- Within how many days of the trigger event should the equalization payment be made?: equalization_payment_due_days
+  datatype: integer
+  show if:
+    is: true
+    variable: property_equalization_judgment
+question: Personal Property Division
+validation code: |-
+  if personal_property_option != 'Complex':
+    p_to_r_property_exchange = ''
+  if p_to_r_property_exchange != True:
+    personal_property_list_p_to_r = ''
+  if personal_property_option != 'Complex':
+    r_to_p_property_exchange = ''
+  if r_to_p_property_exchange != True:
+    personal_property_list_r_to_p = ''
+  if personal_property_option != 'Complex':
+    addl_prop_section = ''
+  if remaining_retrieval_clause != True:
+    addl_prop_retaining = ''
+  if remaining_retrieval_clause != True:
+    addl_prop_relinquishing = ''
+  if remaining_retrieval_clause != True:
+    remaining_property_storage_location = ''
+  if remaining_retrieval_clause != True:
+    remaining_property_retrieval_days = 0
+  if personal_property_option != 'Complex':
+    property_equalization_judgment = ''
+  if property_equalization_judgment != True:
+    equalization_payor = ''
+  if property_equalization_judgment != True:
+    equalization_payee = ''
+  if property_equalization_judgment != True:
+    equalization_trigger_event = ''
+  if property_equalization_judgment != True:
+    equalization_payment_due_days = 0
+---
+fields:
+- This workflow can include a section giving a party possession of the family vehicle. Do you want to include that section?: vehicle_transfer
+  datatype: yesnoradio
+- Which party will be receiving or retaining possession of the family vehicle?: vehicle_owner_retaining
+  choices:
+  - Petitioner: Petitioner
+  - Respondent: Respondent
+  datatype: dropdown
+- Which party will be relinquishing possession of the family vehicle?: vehicle_owner_relinquishing
+  choices:
+  - Petitioner: Petitioner
+  - Respondent: Respondent
+  datatype: dropdown
+- What is the description of the motor vehicle?: motor_vehicle_description
+  datatype: text
+- What is the year, make, color, and model of the vehicle?: vehicle_description
+  datatype: text
+- Is there a non-party co-owner of the vehicle?: non_party_vehicle_co_owner
+  datatype: yesnoradio
+  show if:
+    is: true
+    variable: vehicle_transfer
+- Who is the non-party co-owner of the vehicle?: non_party_vehicle_co_owner_name
+  datatype: text
+  show if:
+    is: true
+    variable: non_party_vehicle_co_owner
+- What is the name of the lender for the vehicle?: vehicle_lender_name
+  datatype: yesnoradio
+question: Vehicle Division
+validation code: |-
+  if vehicle_transfer != True:
+    non_party_vehicle_co_owner = ''
+  if non_party_vehicle_co_owner != True:
+    non_party_vehicle_co_owner_name = ''
+---
+fields:
+- ? |-
+    This workflow can include a section on debt division. There are two options:
+
+    1. An option for a couple with known debts, mortgages, or asset-linked obligations.
+
+    2. An option for a couple with completely separate finances and no shared liabilities.
+  : debt_division_option
+  choices:
+  - Option 1: Option 1
+  - Option 2: Option 2
+  datatype: dropdown
+- Include section for debts that Petitioner will assume?: petitioner_assuming_debts
+  datatype: yesnoradio
+  show if:
+    is: Option 1
+    variable: debt_division_option
+- How much debt owed to a named third party is Petitioner assuming?: p_debt_assumption_amount
+  datatype: integer
+  show if:
+    is: true
+    variable: petitioner_assuming_debts
+- What is the name of that third party?: p_debt_assumption_creditor
+  datatype: text
+  show if:
+    is: true
+    variable: petitioner_assuming_debts
+- Include section for debts that Respondent will assume?: respondent_assuming_debts
+  datatype: yesnoradio
+  show if:
+    is: Option 1
+    variable: debt_division_option
+- How much debt owed to a named third party is Respondent assuming?: r_debt_assumption_amount
+  datatype: integer
+  show if:
+    is: true
+    variable: respondent_assuming_debts
+- What is the name of that third party?: r_debt_assumption_creditor
+  datatype: text
+  show if:
+    is: true
+    variable: respondent_assuming_debts
+question: Debt Division
+validation code: |-
+  if debt_division_option != 'Option 1':
+    petitioner_assuming_debts = ''
+  if petitioner_assuming_debts != True:
+    p_debt_assumption_amount = 0
+  if petitioner_assuming_debts != True:
+    p_debt_assumption_creditor = ''
+  if debt_division_option != 'Option 1':
+    respondent_assuming_debts = ''
+  if respondent_assuming_debts != True:
+    r_debt_assumption_amount = 0
+  if respondent_assuming_debts != True:
+    r_debt_assumption_creditor = ''
+---
+fields:
+- Which party will be obligated to maintain a life insurance policy?: insured_party
+  choices:
+  - Petitioner: Petitioner
+  - Respondent: Respondent
+  datatype: dropdown
+- What is the amount of the life insurance?: life_insurance_amount
+  datatype: number
+- Which party will be responsible first for any uninsured medical bills?: first_medical_bills_excess
+  choices:
+  - Petitioner: Petitioner
+  - Respondent: Respondent
+  datatype: dropdown
+- Which party will be responsible second for any uninsured medical bills?: second_medical_bills_excess
+  choices:
+  - Petitioner: Petitioner
+  - Respondent: Respondent
+  datatype: dropdown
+- What is the amount of uninsured medical bills for which the specified party is responsible each calendar year?: uninsured_medical_bills_first_amount
+  datatype: number
+- What percentage of further medical expenses not covered by insurance will the first specified party pay?: further_medical_expenses_percentage
+  datatype: number
+question: Insurance and Medical Expenses
+---
+code: |
+  page_condition_1928657136 = ''
+  #hslPageCondition
+  if minor_children_involved:
+    insured_party = ''
+    life_insurance_amount = 0
+    first_medical_bills_excess = ''
+    second_medical_bills_excess = ''
+    uninsured_medical_bills_first_amount = 0
+    further_medical_expenses_percentage = 0
+depends on:
+- minor_children_involved
+field: page_condition_1928657136
+only sets:
+- page_condition_1928657136
+- insured_party
+- life_insurance_amount
+- first_medical_bills_excess
+- second_medical_bills_excess
+- uninsured_medical_bills_first_amount
+- further_medical_expenses_percentage
+---
+fields:
+- ? "This interview can generate two different tax treatment options:\n\nOption 1\
+    \ \u2013 Alternating Years: The child support payor may claim the children in\
+    \ odd-numbered years if current on support, and the payee claims them in even-numbered\
+    \ years.\n\nOption 2 \u2013 Joint Return then Custodial Claim: The parents file\
+    \ a joint return for the specified year and, in later years, the custodial parent\
+    \ claims the children and shares any Earned Income Tax Credit refund with the\
+    \ other parent."
+  : tax_treatment_option
+  choices:
+  - Option 1: Option 1
+  - Option 2: Option 2
+  datatype: dropdown
+- What is the taxable year for which the parties will file a joint tax return?: taxable_year_joint_return
+  datatype: text
+  show if:
+    is: Option 2
+    variable: tax_treatment_option
+question: Tax Matters
+validation code: |-
+  if tax_treatment_option != 'Option 2':
+    taxable_year_joint_return = ''
+---
+fields:
+- What is the name of the firm?: firm_name
+  datatype: text
+- What is the attorney's signature?: attorney_signature
+  datatype: text
+- What is the attorney's name?: attorney_name
+  datatype: text
+- What is the attorney's bar number?: attorney_bar_number
+  datatype: text
+- What is the address of the firm?: firm_address
+  datatype: text
+- What is the attorney's phone number?: attorney_phone_number
+  datatype: text
+- What is the attorney's email address?: attorney_email
+  datatype: email
+question: Signatures and Attorney Information
+---
+field: hsl_review_answers
+prevent going back: true
+question: ${ word("Please review your answers below.") }
+review:
+- note: '####Case Information'
+- Change Answer: court_name
+  button: '**What is the name of the court?**: ${ court_name }'
+- Change Answer: case_number
+  button: '**What is the case number?**: ${ case_number }'
+- Change Answer: county_name
+  button: '**What is the name of the county?**: ${ county_name }'
+- Change Answer: local_rule_exchange_income_info
+  button: '**Does this county have a Local Rule requiring that parties exchange income
+    information for the previous tax years, including the most recent employment check
+    stub showing year-to-date earnings and tax returns on alternate years beginning
+    the year after the decree is issued?**: ${ local_rule_exchange_income_info }'
+- note: '####Party Information'
+- Change Answer: petitioner_document_title
+  button: '**What is the document title for the petitioner (e.g., Husband, Wife, Spouse
+    1)?**: ${ petitioner_document_title }'
+- Change Answer: respondent_document_title
+  button: '**What is the document title for the respondent (e.g., Husband, Wife, Spouse
+    2)?**: ${ respondent_document_title }'
+- Change Answer: petitioner_name
+  button: '**What is the name of the petitioner?**: ${ petitioner_name }'
+- Change Answer: respondent_name
+  button: '**What is the name of the respondent?**: ${ respondent_name }'
+- note: '####Child Support and Related Financials'
+- Change Answer: minor_children_involved
+  button: '**Do the parties have minor children together that were born of the marriage?**:
+    ${ minor_children_involved }'
+- Change Answer: number_of_children
+  button: '**How many minor children do the parties have together that were born of
+    the marriage?**: ${ number_of_children }'
+  show if: minor_children_involved == True
+- Change Answer: joint_or_sole
+  button: '**Will the parties agree to joint custody or to sole custody?**: ${ joint_or_sole
+    }'
+  show if: minor_children_involved == True
+- Change Answer: party_getting_kids_custody
+  button: '**Which party is getting custody of the kids?**: ${ party_getting_kids_custody
+    }'
+  show if: minor_children_involved == True
+- Change Answer: children_names_and_ages
+  button: '**What are the names and ages of the minor child(ren)?**: ${ children_names_and_ages
+    }'
+  show if: minor_children_involved == True
+- Change Answer: party_getting_visitation
+  button: '**Which party is getting visitation only of the kids?**: ${ party_getting_visitation
+    }'
+  show if: minor_children_involved == True
+- Change Answer: visitation_details_option
+  button: |-
+    **This workflow can generate a parenting time / visitation clause. Here are the three options:
+
+    Option 1: alternate weekends from 6 p.m. Friday evenings until 6 p.m. Sunday evenings
+    Option 2: pursuant to the Indiana Parenting Time Guidelines.
+    Option 3: as agreed by the parties**: ${ visitation_details_option }
+  show if: joint_or_sole == 'Sole'
+- Change Answer: visitation_date_begin
+  button: '**What date will visitations begin?**: ${ visitation_date_begin }'
+  show if: joint_or_sole == 'Sole'
+- Change Answer: child_support_payor
+  button: '**Which party will pay child support?**: ${ child_support_payor }'
+  show if: joint_or_sole == 'Sole'
+- Change Answer: child_support_payee
+  button: '**Which party will receive child support?**: ${ child_support_payee }'
+  show if: joint_or_sole == 'Sole'
+- Change Answer: child_support_amount_weekly
+  button: '**What is the weekly child support payment amount?**: ${ child_support_amount_weekly
+    }'
+  show if: joint_or_sole == 'Sole'
+- Change Answer: child_support_payor_gross_income_weekly
+  button: '**What is the weekly gross income of the child support payor?**: ${ child_support_payor_gross_income_weekly
+    }'
+  show if: joint_or_sole == 'Sole'
+- Change Answer: child_support_payee_gross_income_weekly
+  button: '**What is the weekly gross income of the child support payee?**: ${ child_support_payee_gross_income_weekly
+    }'
+  show if: joint_or_sole == 'Sole'
+- Change Answer: support_arrearage_owed
+  button: '**Is any support arrearage owed?**: ${ support_arrearage_owed }'
+- Change Answer: support_arrearage_amount
+  button: '**What is the amount of support arrearage owed?**: ${ support_arrearage_amount
+    }'
+  show if: support_arrearage_owed == True
+- Change Answer: support_arrearage_option
+  button: "**This workflow has the ability to insert a paragraphs related to child\
+    \ support arrearages. Please pick one of the following options:\n\nOption 1: A\
+    \ fixed dollar amount of arrears is specified and agreed upon. That amount is\
+    \ reduced to judgment and becomes immediately due and payable at the time of finalizing\
+    \ the dissolution.\n\nOption 2: If the party is in arrears as of the date the\
+    \ case is submitted to the Court, the Clerk\u2019s records will determine the\
+    \ amount. That amount is reduced to judgment and becomes immediately payable.\n\
+    \nOption 3: Same as Option 2, but adds preservation language: the Clerk-determined\
+    \ arrearage is reduced to judgment and explicitly preserved and maintained.\n\n\
+    Option 4 (Kosciusko County-specific): If the party is in arrears as of the date\
+    \ of finalization, the arrearage is preserved in the final decree dissolving the\
+    \ marriage.**: ${ support_arrearage_option }"
+  show if: support_arrearage_owed == True
+- Change Answer: withholding_option
+  button: |-
+    **This workflow has the ability to insert a paragraphs related to income withholding. Please pick one of the following options:
+
+    Option 1: .  The parties recognize that income withholding heretofore activated herein shall remain activated for the withholding of current support and delinquencies and arrearages.
+
+    Option 2: An income withholding order for the withholding of child support obligations will be entered as a separate order herein.**: ${ withholding_option }
+  show if: support_arrearage_owed == True
+- Change Answer: protection_order
+  button: '**Is there a protection order in place?**: ${ protection_order }'
+- note: '####Voluntary Execution and Legal Representation'
+- Change Answer: property_owner_quit_claiming
+  button: '**Which spouse is agreeing to quit claim their rights in the real estate?**:
+    ${ property_owner_quit_claiming }'
+- Change Answer: personal_property_delivery_possessor_pronoun
+  button: '**What is the pronoun for the party who will hold the delivered property?**:
+    ${ personal_property_delivery_possessor_pronoun }'
+- Change Answer: attorney_role
+  button: '**What is the role of the attorney drafting the agreement?**: ${ attorney_role
+    }'
+- note: '####Real Estate Division'
+- Change Answer: a_party_owns_real_estate
+  button: '**Is either party the owner of a legal or equitable interest in any real
+    estate?**: ${ a_party_owns_real_estate }'
+- Change Answer: real_estate_division_options
+  button: "**This interview can help prepare two alternative options for real estate\
+    \ division. \n\nOne option is simpler and more immediate, involving a straightforward\
+    \ quitclaim without refinancing or sale contingencies, and accomplishes a clean\
+    \ break with minimal ongoing obligations. \n\nThe other option includes refinancing\
+    \ efforts, sale contingencies, and is a more structured, long-term arrangement.\
+    \ Please choose one.**: ${ real_estate_division_options }"
+  show if: a_party_owns_real_estate == True
+- Change Answer: quitclaim_deadline
+  button: '**When will the quitclaim be effected? **: ${ quitclaim_deadline }'
+  show if: real_estate_division_options == 'Straightforward Quitclaim'
+- Change Answer: property_description
+  button: '**What is the legal description of the property to be transferred?**: ${
+    property_description }'
+  show if: a_party_owns_real_estate == True
+- Change Answer: property_street_address
+  button: '**What is the street address of the property to be transferred?**: ${ property_street_address
+    }'
+  show if: a_party_owns_real_estate == True
+- Change Answer: property_owner_relinquishing
+  button: '**What is the party that will be relinquishing ownership?**: ${ property_owner_relinquishing
+    }'
+- Change Answer: property_owner_retaining
+  button: '**Which party will retain/receive the property?**: ${ property_owner_retaining
+    }'
+  show if: a_party_owns_real_estate == True
+- Change Answer: mortgage_on_property
+  button: '**Is there a mortgage on the property?**: ${ mortgage_on_property }'
+  show if: a_party_owns_real_estate == True
+- Change Answer: mortgage_balance
+  button: '**What is the mortgage balance?**: ${ mortgage_balance }'
+  show if: mortgage_on_property == True
+- Change Answer: mortgage_account_last_three_digits
+  button: '**What are the last three digits of the mortgage account?**: ${ mortgage_account_last_three_digits
+    }'
+  show if: mortgage_on_property == True
+- Change Answer: mortgage_balance_date
+  button: '**As of what date is the mortgage balance equal to the above stated amount?
+    **: ${ mortgage_balance_date }'
+  show if: mortgage_on_property == True
+- Change Answer: mortgage_lender_name
+  button: '**What is the name of the mortgage lender?**: ${ mortgage_lender_name }'
+  show if: mortgage_on_property == True
+- Change Answer: points_above_prime
+  button: '**The division of property may require mortgage refinancing to remove the
+    party relinquishing the property from the title. In this case, how many points
+    above the prime rate is the upper limit for the new mortgage rate?**: ${ points_above_prime
+    }'
+  show if: real_estate_division_options == 'More structured arrangement'
+- Change Answer: calendar_year_reporting_begins
+  button: '**The division of property may require annual reporting of efforts to refinance
+    the mortgage. In this case, reporting should begin at the end of which calendar
+    year?**: ${ calendar_year_reporting_begins }'
+  show if: real_estate_division_options == 'More structured arrangement'
+- Change Answer: net_proceeds_percentage_relinquishing
+  button: '**The division of property may require selling the property and dividing
+    the sale proceeds. In this case, what percentage of the proceeds should be allocated
+    to the party who relinquished their ownership interest before the sale?**: ${
+    net_proceeds_percentage_relinquishing }'
+  show if: real_estate_division_options == 'More structured arrangement'
+- Change Answer: net_proceeds_percentage_retaining
+  button: '**The division of property may require selling the property and dividing
+    the sale proceeds. In this case, what percentage of the proceeds should be allocated
+    to the party who relinquished their ownership interest before the sale? Percentages
+    should total 100%.**: ${ net_proceeds_percentage_retaining }'
+  show if: real_estate_division_options == 'More structured arrangement'
+- Change Answer: asking_price_reduction_initial_amount
+  button: '**The division of property may require selling the property and dividing
+    the sale proceeds. If it does not sell within the first six months, how much should
+    the price be reduced, expressed as a dollar amount?**: ${ asking_price_reduction_initial_amount
+    }'
+  show if: real_estate_division_options == 'More structured arrangement'
+- Change Answer: asking_price_reduction_recurring_amount
+  button: '**If it does not sell after the first reduction, it will be reduced further
+    every six months. By how much should the price be further reduced every six months,
+    expressed as a dollar amount?**: ${ asking_price_reduction_recurring_amount }'
+  show if: real_estate_division_options == 'More structured arrangement'
+- note: '####Personal Property Division'
+- Change Answer: personal_property_option
+  button: '**This workflow can generate two different paragraph options for division
+    of personal property. One simple option stating that the division is already complete
+    and a more complex one that includes a list of property to exchange and a timeline.
+    Which one would you like?**: ${ personal_property_option }'
+- Change Answer: p_to_r_property_exchange
+  button: '**Does the Petitioner need to return property to Respondent?**: ${ p_to_r_property_exchange
+    }'
+  show if: personal_property_option == 'Complex'
+- Change Answer: personal_property_list_p_to_r
+  button: '**What is the list of personal property to be delivered by the petitioner
+    to the respondent?**: ${ personal_property_list_p_to_r }'
+  show if: p_to_r_property_exchange == True
+- Change Answer: r_to_p_property_exchange
+  button: '**Does the Respondent need to return property to Petitioner?**: ${ r_to_p_property_exchange
+    }'
+  show if: personal_property_option == 'Complex'
+- Change Answer: personal_property_list_r_to_p
+  button: '**What is the list of personal property to be delivered by the Respondent
+    to the Petitioner?**: ${ personal_property_list_r_to_p }'
+  show if: r_to_p_property_exchange == True
+- Change Answer: addl_prop_section
+  button: '**This workflow can generate an additional section on exchanging household
+    furnishings and other remaining personal property. Do you want to include this
+    section? **: ${ addl_prop_section }'
+  show if: personal_property_option == 'Complex'
+- Change Answer: remaining_retrieval_clause
+  button: '**Do you also want to include language on timing and location of the retrieval?**:
+    ${ remaining_retrieval_clause }'
+- Change Answer: addl_prop_retaining
+  button: '**Which party will be receiving/retaining remaining household furnishings
+    and remaining personal property?**: ${ addl_prop_retaining }'
+  show if: remaining_retrieval_clause == True
+- Change Answer: addl_prop_relinquishing
+  button: '**Which party will be relinquishing remaining household furnishings and
+    remaining personal property?**: ${ addl_prop_relinquishing }'
+  show if: remaining_retrieval_clause == True
+- Change Answer: remaining_property_storage_location
+  button: '**What is the location for the exchange of additional household furnishings
+    and property?**: ${ remaining_property_storage_location }'
+  show if: remaining_retrieval_clause == True
+- Change Answer: remaining_property_retrieval_days
+  button: '**How many days should they have to retrieve the propertyt?**: ${ remaining_property_retrieval_days
+    }'
+  show if: remaining_retrieval_clause == True
+- Change Answer: property_equalization_judgment
+  button: '**This workflow can include a section on a property equalization judgment.
+    Do you want to include it?**: ${ property_equalization_judgment }'
+  show if: personal_property_option == 'Complex'
+- Change Answer: equalization_payor
+  button: '**Which party should pay equalization money?**: ${ equalization_payor }'
+  show if: property_equalization_judgment == True
+- Change Answer: equalization_payee
+  button: '**Which party should receive equalization money?**: ${ equalization_payee
+    }'
+  show if: property_equalization_judgment == True
+- Change Answer: equalization_payment_amount
+  button: '**How much should be paid?**: ${ equalization_payment_amount }'
+- Change Answer: equalization_trigger_event
+  button: '**What should the trigger event for the payment be? E.g., . start of employment
+    with a company or by a certain date, whichever occurs first.**: ${ equalization_trigger_event
+    }'
+  show if: property_equalization_judgment == True
+- Change Answer: equalization_payment_due_days
+  button: '**Within how many days of the trigger event should the equalization payment
+    be made?**: ${ equalization_payment_due_days }'
+  show if: property_equalization_judgment == True
+- note: '####Vehicle Division'
+- Change Answer: vehicle_transfer
+  button: '**This workflow can include a section giving a party possession of the
+    family vehicle. Do you want to include that section?**: ${ vehicle_transfer }'
+- Change Answer: vehicle_owner_retaining
+  button: '**Which party will be receiving or retaining possession of the family vehicle?**:
+    ${ vehicle_owner_retaining }'
+- Change Answer: vehicle_owner_relinquishing
+  button: '**Which party will be relinquishing possession of the family vehicle?**:
+    ${ vehicle_owner_relinquishing }'
+- Change Answer: motor_vehicle_description
+  button: '**What is the description of the motor vehicle?**: ${ motor_vehicle_description
+    }'
+- Change Answer: vehicle_description
+  button: '**What is the year, make, color, and model of the vehicle?**: ${ vehicle_description
+    }'
+- Change Answer: non_party_vehicle_co_owner
+  button: '**Is there a non-party co-owner of the vehicle?**: ${ non_party_vehicle_co_owner
+    }'
+  show if: vehicle_transfer == True
+- Change Answer: non_party_vehicle_co_owner_name
+  button: '**Who is the non-party co-owner of the vehicle?**: ${ non_party_vehicle_co_owner_name
+    }'
+  show if: non_party_vehicle_co_owner == True
+- Change Answer: vehicle_lender_name
+  button: '**What is the name of the lender for the vehicle?**: ${ vehicle_lender_name
+    }'
+- note: '####Debt Division'
+- Change Answer: debt_division_option
+  button: |-
+    **This workflow can include a section on debt division. There are two options:
+
+    1. An option for a couple with known debts, mortgages, or asset-linked obligations.
+
+    2. An option for a couple with completely separate finances and no shared liabilities.**: ${ debt_division_option }
+- Change Answer: petitioner_assuming_debts
+  button: '**Include section for debts that Petitioner will assume?**: ${ petitioner_assuming_debts
+    }'
+  show if: debt_division_option == 'Option 1'
+- Change Answer: p_debt_assumption_amount
+  button: '**How much debt owed to a named third party is Petitioner assuming?**:
+    ${ p_debt_assumption_amount }'
+  show if: petitioner_assuming_debts == True
+- Change Answer: p_debt_assumption_creditor
+  button: '**What is the name of that third party?**: ${ p_debt_assumption_creditor
+    }'
+  show if: petitioner_assuming_debts == True
+- Change Answer: respondent_assuming_debts
+  button: '**Include section for debts that Respondent will assume?**: ${ respondent_assuming_debts
+    }'
+  show if: debt_division_option == 'Option 1'
+- Change Answer: r_debt_assumption_amount
+  button: '**How much debt owed to a named third party is Respondent assuming?**:
+    ${ r_debt_assumption_amount }'
+  show if: respondent_assuming_debts == True
+- Change Answer: r_debt_assumption_creditor
+  button: '**What is the name of that third party?**: ${ r_debt_assumption_creditor
+    }'
+  show if: respondent_assuming_debts == True
+- note: '####Insurance and Medical Expenses'
+  show if: not minor_children_involved
+- Change Answer: insured_party
+  button: '**Which party will be obligated to maintain a life insurance policy?**:
+    ${ insured_party }'
+  show if: not minor_children_involved
+- Change Answer: life_insurance_amount
+  button: '**What is the amount of the life insurance?**: ${ life_insurance_amount
+    }'
+  show if: not minor_children_involved
+- Change Answer: first_medical_bills_excess
+  button: '**Which party will be responsible first for any uninsured medical bills?**:
+    ${ first_medical_bills_excess }'
+  show if: not minor_children_involved
+- Change Answer: second_medical_bills_excess
+  button: '**Which party will be responsible second for any uninsured medical bills?**:
+    ${ second_medical_bills_excess }'
+  show if: not minor_children_involved
+- Change Answer: uninsured_medical_bills_first_amount
+  button: '**What is the amount of uninsured medical bills for which the specified
+    party is responsible each calendar year?**: ${ uninsured_medical_bills_first_amount
+    }'
+  show if: not minor_children_involved
+- Change Answer: further_medical_expenses_percentage
+  button: '**What percentage of further medical expenses not covered by insurance
+    will the first specified party pay?**: ${ further_medical_expenses_percentage
+    }'
+  show if: not minor_children_involved
+- note: '####Tax Matters'
+- Change Answer: tax_treatment_option
+  button: "**This interview can generate two different tax treatment options:\n\n\
+    Option 1 \u2013 Alternating Years: The child support payor may claim the children\
+    \ in odd-numbered years if current on support, and the payee claims them in even-numbered\
+    \ years.\n\nOption 2 \u2013 Joint Return then Custodial Claim: The parents file\
+    \ a joint return for the specified year and, in later years, the custodial parent\
+    \ claims the children and shares any Earned Income Tax Credit refund with the\
+    \ other parent.**: ${ tax_treatment_option }"
+- Change Answer: taxable_year_joint_return
+  button: '**What is the taxable year for which the parties will file a joint tax
+    return?**: ${ taxable_year_joint_return }'
+  show if: tax_treatment_option == 'Option 2'
+- note: '####Signatures and Attorney Information'
+- Change Answer: firm_name
+  button: '**What is the name of the firm?**: ${ firm_name }'
+- Change Answer: attorney_signature
+  button: '**What is the attorney''s signature?**: ${ attorney_signature }'
+- Change Answer: attorney_name
+  button: '**What is the attorney''s name?**: ${ attorney_name }'
+- Change Answer: attorney_bar_number
+  button: '**What is the attorney''s bar number?**: ${ attorney_bar_number }'
+- Change Answer: firm_address
+  button: '**What is the address of the firm?**: ${ firm_address }'
+- Change Answer: attorney_phone_number
+  button: '**What is the attorney''s phone number?**: ${ attorney_phone_number }'
+- Change Answer: attorney_email
+  button: '**What is the attorney''s email address?**: ${ attorney_email }'
+skip undefined: false
+---
+code: completed_at = current_datetime()
+---
+code: |-
+  #hslJsonState
+  #{"formula_groups": [], "output_document_conditions": {"condition_groups": [], "default_documents": []}, "output_documents": [{"display_formats": [], "fields": {}, "filename": "Marital_Settlement_Agreement_2024_blueprint_20250813_061525.docx", "generate_multiple_for": "", "id": "3997296b-03d9-45f4-950d-90cded3eed9a", "name": "Marital Settlement Agreement 2024", "variable_name": "Marital_Settlement_Agreement_2024"}], "pages": [{"dataname": null, "fields": [{"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "court_name"}, {"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "case_number"}, {"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "county_name"}, {"choices": [], "composed_values": [], "datatype": "yesnoradio", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "local_rule_exchange_income_info"}], "invisible_logic": null, "is_invisible_logic_question": false, "is_repeating_question": false, "title": "Case Information"}, {"dataname": null, "fields": [{"choices": ["Husband", "Wife", "Spouse 1"], "composed_values": [], "datatype": "dropdown", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "petitioner_document_title"}, {"choices": ["Husband", "Wife", "Spouse 2"], "composed_values": [], "datatype": "dropdown", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "respondent_document_title"}, {"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "petitioner_name"}, {"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "respondent_name"}], "invisible_logic": null, "is_invisible_logic_question": false, "is_repeating_question": false, "title": "Party Information"}, {"dataname": null, "fields": [{"choices": [], "composed_values": [], "datatype": "yesnoradio", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "minor_children_involved"}, {"choices": [], "composed_values": [], "datatype": "integer", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "number_of_children"}, {"choices": ["Joint", "Sole"], "composed_values": [], "datatype": "dropdown", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "joint_or_sole"}, {"choices": ["Petitioner", "Respondent"], "composed_values": [], "datatype": "dropdown", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "party_getting_kids_custody"}, {"choices": [], "composed_values": [], "datatype": "area", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "children_names_and_ages"}, {"choices": ["Petitioner", "Respondent"], "composed_values": [], "datatype": "dropdown", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "party_getting_visitation"}, {"choices": ["Option 1", "Option 2", "Option 3"], "composed_values": [], "datatype": "dropdown", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "visitation_details_option"}, {"choices": [], "composed_values": [], "datatype": "date", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "visitation_date_begin"}, {"choices": ["Petitioner", "Respondent"], "composed_values": [], "datatype": "dropdown", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "child_support_payor"}, {"choices": ["Petitioner", "Respondent"], "composed_values": [], "datatype": "dropdown", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "child_support_payee"}, {"choices": [], "composed_values": [], "datatype": "number", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "child_support_amount_weekly"}, {"choices": [], "composed_values": [], "datatype": "number", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "child_support_payor_gross_income_weekly"}, {"choices": [], "composed_values": [], "datatype": "number", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "child_support_payee_gross_income_weekly"}, {"choices": [], "composed_values": [], "datatype": "yesnoradio", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "support_arrearage_owed"}, {"choices": [], "composed_values": [], "datatype": "number", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "support_arrearage_amount"}, {"choices": ["Option 1", "Option 2", "Option 3", "Option 4"], "composed_values": [], "datatype": "dropdown", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "support_arrearage_option"}, {"choices": ["Option 1", "Option 2"], "composed_values": [], "datatype": "dropdown", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "withholding_option"}, {"choices": [], "composed_values": [], "datatype": "yesnoradio", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "protection_order"}], "invisible_logic": null, "is_invisible_logic_question": false, "is_repeating_question": false, "title": "Child Support and Related Financials"}, {"dataname": null, "fields": [{"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "property_owner_quit_claiming"}, {"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "personal_property_delivery_possessor_pronoun"}, {"choices": ["Attorney for Petitioner", "Attorney for Respondent"], "composed_values": [], "datatype": "dropdown", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "attorney_role"}], "invisible_logic": null, "is_invisible_logic_question": false, "is_repeating_question": false, "title": "Voluntary Execution and Legal Representation"}, {"dataname": null, "fields": [{"choices": [], "composed_values": [], "datatype": "yesnoradio", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "a_party_owns_real_estate"}, {"choices": ["Straightforward Quitclaim", "More structured arrangement"], "composed_values": [], "datatype": "dropdown", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "real_estate_division_options"}, {"choices": ["prior to the final hearing held herein;", "within ten (10) days of the Court approval of this document;"], "composed_values": [], "datatype": "dropdown", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "quitclaim_deadline"}, {"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "property_description"}, {"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "property_street_address"}, {"choices": ["Petitioner", "Respondent"], "composed_values": [], "datatype": "dropdown", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "property_owner_relinquishing"}, {"choices": ["Petitioner", "Respondent"], "composed_values": [], "datatype": "dropdown", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "property_owner_retaining"}, {"choices": [], "composed_values": [], "datatype": "yesnoradio", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "mortgage_on_property"}, {"choices": [], "composed_values": [], "datatype": "number", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "mortgage_balance"}, {"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "mortgage_account_last_three_digits"}, {"choices": [], "composed_values": [], "datatype": "date", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "mortgage_balance_date"}, {"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "mortgage_lender_name"}, {"choices": [], "composed_values": [], "datatype": "integer", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "points_above_prime"}, {"choices": [], "composed_values": [], "datatype": "integer", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "calendar_year_reporting_begins"}, {"choices": [], "composed_values": [], "datatype": "integer", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "net_proceeds_percentage_relinquishing"}, {"choices": [], "composed_values": [], "datatype": "integer", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "net_proceeds_percentage_retaining"}, {"choices": [], "composed_values": [], "datatype": "integer", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "asking_price_reduction_initial_amount"}, {"choices": [], "composed_values": [], "datatype": "integer", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "asking_price_reduction_recurring_amount"}], "invisible_logic": null, "is_invisible_logic_question": false, "is_repeating_question": false, "title": "Real Estate Division"}, {"dataname": null, "fields": [{"choices": ["Simple", "Complex"], "composed_values": [], "datatype": "dropdown", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "personal_property_option"}, {"choices": [], "composed_values": [], "datatype": "yesnoradio", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "p_to_r_property_exchange"}, {"choices": [], "composed_values": [], "datatype": "area", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "personal_property_list_p_to_r"}, {"choices": [], "composed_values": [], "datatype": "yesnoradio", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "r_to_p_property_exchange"}, {"choices": [], "composed_values": [], "datatype": "area", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "personal_property_list_r_to_p"}, {"choices": [], "composed_values": [], "datatype": "yesnoradio", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "addl_prop_section"}, {"choices": [], "composed_values": [], "datatype": "yesnoradio", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "remaining_retrieval_clause"}, {"choices": ["Petitioner", "Respondent"], "composed_values": [], "datatype": "dropdown", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "addl_prop_retaining"}, {"choices": ["Petitioner", "Respondent"], "composed_values": [], "datatype": "dropdown", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "addl_prop_relinquishing"}, {"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "remaining_property_storage_location"}, {"choices": [], "composed_values": [], "datatype": "integer", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "remaining_property_retrieval_days"}, {"choices": [], "composed_values": [], "datatype": "yesnoradio", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "property_equalization_judgment"}, {"choices": ["Petitioner", "Respondent"], "composed_values": [], "datatype": "dropdown", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "equalization_payor"}, {"choices": ["Petitioner", "Respondent"], "composed_values": [], "datatype": "dropdown", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "equalization_payee"}, {"choices": [], "composed_values": [], "datatype": "integer", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "equalization_payment_amount"}, {"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "equalization_trigger_event"}, {"choices": [], "composed_values": [], "datatype": "integer", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "equalization_payment_due_days"}], "invisible_logic": null, "is_invisible_logic_question": false, "is_repeating_question": false, "title": "Personal Property Division"}, {"dataname": null, "fields": [{"choices": [], "composed_values": [], "datatype": "yesnoradio", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "vehicle_transfer"}, {"choices": ["Petitioner", "Respondent"], "composed_values": [], "datatype": "dropdown", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "vehicle_owner_retaining"}, {"choices": ["Petitioner", "Respondent"], "composed_values": [], "datatype": "dropdown", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "vehicle_owner_relinquishing"}, {"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "motor_vehicle_description"}, {"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "vehicle_description"}, {"choices": [], "composed_values": [], "datatype": "yesnoradio", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "non_party_vehicle_co_owner"}, {"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "non_party_vehicle_co_owner_name"}, {"choices": [], "composed_values": [], "datatype": "yesnoradio", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "vehicle_lender_name"}], "invisible_logic": null, "is_invisible_logic_question": false, "is_repeating_question": false, "title": "Vehicle Division"}, {"dataname": null, "fields": [{"choices": ["Option 1", "Option 2"], "composed_values": [], "datatype": "dropdown", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "debt_division_option"}, {"choices": [], "composed_values": [], "datatype": "yesnoradio", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "petitioner_assuming_debts"}, {"choices": [], "composed_values": [], "datatype": "integer", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "p_debt_assumption_amount"}, {"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "p_debt_assumption_creditor"}, {"choices": [], "composed_values": [], "datatype": "yesnoradio", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "respondent_assuming_debts"}, {"choices": [], "composed_values": [], "datatype": "integer", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "r_debt_assumption_amount"}, {"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "r_debt_assumption_creditor"}], "invisible_logic": null, "is_invisible_logic_question": false, "is_repeating_question": false, "title": "Debt Division"}, {"dataname": null, "fields": [{"choices": ["Petitioner", "Respondent"], "composed_values": [], "datatype": "dropdown", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "insured_party"}, {"choices": [], "composed_values": [], "datatype": "number", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "life_insurance_amount"}, {"choices": ["Petitioner", "Respondent"], "composed_values": [], "datatype": "dropdown", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "first_medical_bills_excess"}, {"choices": ["Petitioner", "Respondent"], "composed_values": [], "datatype": "dropdown", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "second_medical_bills_excess"}, {"choices": [], "composed_values": [], "datatype": "number", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "uninsured_medical_bills_first_amount"}, {"choices": [], "composed_values": [], "datatype": "number", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "further_medical_expenses_percentage"}], "invisible_logic": null, "is_invisible_logic_question": false, "is_repeating_question": false, "title": "Insurance and Medical Expenses"}, {"dataname": null, "fields": [{"choices": ["Option 1", "Option 2"], "composed_values": [], "datatype": "dropdown", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "tax_treatment_option"}, {"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "taxable_year_joint_return"}], "invisible_logic": null, "is_invisible_logic_question": false, "is_repeating_question": false, "title": "Tax Matters"}, {"dataname": null, "fields": [{"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "firm_name"}, {"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "attorney_signature"}, {"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "attorney_name"}, {"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "attorney_bar_number"}, {"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "firm_address"}, {"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "attorney_phone_number"}, {"choices": [], "composed_values": [], "datatype": "email", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "attorney_email"}], "invisible_logic": null, "is_invisible_logic_question": false, "is_repeating_question": false, "title": "Signatures and Attorney Information"}, {"dataname": "hsl_invisible_logic_0", "fields": [{"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "document_title"}], "invisible_logic": {"elseIfStatements": [{"field": null, "logicOperation": null, "next": null, "thenStatements": [{"field": null, "values": []}], "values": []}], "elseStatements": [{"field": {"block": "4900583159", "choicesAsText": null, "code": null, "csvFile": null, "datatype": "text", "default": [], "field metadata": {}, "help": null, "hide if": [], "isClioOutputField": false, "isShowIf": false, "key": "no label", "maxlength": null, "minlength": null, "price": null, "referencedRepeatingQuestion": {}, "repeatingDataCategory": null, "show if": [], "showHideField": null, "showHideFieldValue": null, "testMode": false, "validate": null, "value": "document_title"}, "values": [{"block": null, "datatype": "text", "field": null, "value": "Agreement Regarding Settlement of Property and Debts"}], "variable": "document_title"}], "ifStatement": {"andOr": "and", "field": {"block": "2106476125", "choicesAsText": null, "code": null, "csvFile": null, "datatype": "yesnoradio", "default": [], "field metadata": {}, "help": null, "hide if": [], "isClioOutputField": false, "isShowIf": false, "key": "Do the parties have minor children together that were born of the marriage?", "maxlength": null, "minlength": null, "price": null, "referencedRepeatingQuestion": {}, "repeatingDataCategory": null, "show if": [], "showHideField": null, "showHideFieldValue": null, "testMode": false, "validate": null, "value": "minor_children_involved"}, "logicOperation": "eq", "next": null, "thenStatements": [{"field": {"block": "4900583159", "choicesAsText": null, "code": null, "csvFile": null, "datatype": "text", "default": [], "field metadata": {}, "help": null, "hide if": [], "isClioOutputField": false, "isShowIf": false, "key": "no label", "maxlength": null, "minlength": null, "price": null, "referencedRepeatingQuestion": {}, "repeatingDataCategory": null, "show if": [], "showHideField": null, "showHideFieldValue": null, "testMode": false, "validate": null, "value": "document_title"}, "values": [{"block": null, "datatype": "text", "field": null, "value": "Agreement Regarding Settlement of Property and Debts and Custody of Minor Children"}], "variable": "document_title"}], "values": [{"block": null, "datatype": "yesnoradio", "field": null, "value": "True"}], "variable": "minor_children_involved"}}, "is_invisible_logic_question": true, "is_repeating_question": false, "title": "Invisible Logic - Document Title"}, {"dataname": "hsl_invisible_logic_1", "fields": [{"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "child_or_children"}], "invisible_logic": {"elseIfStatements": [{"field": {"block": "2106476125", "choicesAsText": null, "code": null, "csvFile": null, "datatype": "integer", "default": [], "field metadata": {}, "help": null, "hide if": [], "isClioOutputField": false, "isShowIf": true, "key": "How many minor children do the parties have together that were born of the marriage?", "maxlength": null, "minlength": null, "price": null, "referencedRepeatingQuestion": {}, "repeatingDataCategory": null, "show if": {"is": true, "variable": "minor_children_involved"}, "showHideField": "4626833121", "showHideFieldValue": "True", "showHideFieldVariable": "minor_children_involved", "testMode": false, "validate": null, "value": "number_of_children"}, "logicOperation": "gt", "next": null, "thenStatements": [{"field": {"block": "544264596", "choicesAsText": null, "code": null, "csvFile": null, "datatype": "text", "default": [], "field metadata": {}, "help": null, "hide if": [], "isClioOutputField": false, "isShowIf": false, "key": "no label", "maxlength": null, "minlength": null, "price": null, "referencedRepeatingQuestion": {}, "repeatingDataCategory": null, "show if": [], "showHideField": null, "showHideFieldValue": null, "testMode": false, "validate": null, "value": "child_or_children"}, "values": [{"block": null, "datatype": "text", "field": null, "value": "children"}], "variable": "child_or_children"}], "values": [{"block": null, "datatype": "integer", "field": null, "value": "1"}], "variable": "number_of_children"}, {"field": null, "logicOperation": null, "next": null, "thenStatements": [{"field": null, "values": []}], "values": []}], "elseStatements": [{"field": null, "values": []}], "ifStatement": {"field": {"block": "2106476125", "choicesAsText": null, "code": null, "csvFile": null, "datatype": "integer", "default": [], "field metadata": {}, "help": null, "hide if": [], "isClioOutputField": false, "isShowIf": true, "key": "How many minor children do the parties have together that were born of the marriage?", "maxlength": null, "minlength": null, "price": null, "referencedRepeatingQuestion": {}, "repeatingDataCategory": null, "show if": {"is": true, "variable": "minor_children_involved"}, "showHideField": "4626833121", "showHideFieldValue": "True", "showHideFieldVariable": "minor_children_involved", "testMode": false, "validate": null, "value": "number_of_children"}, "logicOperation": "eq", "next": null, "thenStatements": [{"field": {"block": "544264596", "choicesAsText": null, "code": null, "csvFile": null, "datatype": "text", "default": [], "field metadata": {}, "help": null, "hide if": [], "isClioOutputField": false, "isShowIf": false, "key": "no label", "maxlength": null, "minlength": null, "price": null, "referencedRepeatingQuestion": {}, "repeatingDataCategory": null, "show if": [], "showHideField": null, "showHideFieldValue": null, "testMode": false, "validate": null, "value": "child_or_children"}, "values": [{"block": null, "datatype": "text", "field": null, "value": "child"}], "variable": "child_or_children"}], "values": [{"block": null, "datatype": "integer", "field": null, "value": "1"}], "variable": "number_of_children"}}, "is_invisible_logic_question": true, "is_repeating_question": false, "title": "Invisible Logic - Child or Children"}], "sections": [], "settings": {"access_permissions": {"allowed_email_addresses": [], "allowed_email_domains": [], "is_public": true, "single_use": false}, "custom_css_link": "", "custom_messages": {"continue_later_email_body": "To resume your workflow,", "continue_later_email_link_text": "click here", "continue_later_email_signature": "", "continue_later_email_title": "Your workflow", "continue_later_link_text": "Save link to continue later", "continue_later_message": "Enter your email below, and we'll send you a link to continue this workflow.", "continue_later_title": "Save and continue later", "document_completion_message": "Here are your documents!", "docusign_email_body": "Please DocuSign ${template_variables.docusign_file_names}\n\nThank You, ${template_variables.organization_name}", "docusign_email_subject": "Complete with DocuSign: ${template_variables.docusign_file_count} Documents from ${template_variables.organization_name}", "email_body": "Thank you for taking the time to fill everything out!", "email_not_sent_message": "Your information was not submitted.", "email_sent_message": "Thank you. Your information has been submitted.", "email_subject": "Here are your documents!", "final_page_email_body": "Your documents ${template_variables.file_names}, are attached", "final_page_email_subject": "${template_variables.file_names}", "hidden_document_completion_message": "Ok, all done."}, "documents_emailed": false, "email_docx": false, "email_file_uploads": false, "email_recipients": [], "hide_documents_from_user": false, "include_continue_later_link": false, "integrations": {}, "language": "", "skip_final_review_page": false}, "version": 2}
+---
+attachment:
+  docx template file: Marital_Settlement_Agreement_2024_blueprint_20250813_061525.docx
+  filename: Marital Settlement Agreement 2024
+  name: Marital Settlement Agreement 2024
+  variable name: Marital_Settlement_Agreement_2024
+question metadata:
+  id: 3997296b-03d9-45f4-950d-90cded3eed9a
+---
+code: hsl_attachments = [Marital_Settlement_Agreement_2024]
+need:
+- hsl_review_answers
+only sets:
+- hsl_attachments
+---
+code: |2-
+
+
+  document_title = ''
+
+  if ( minor_children_involved == True ):
+    document_title = f"""Agreement Regarding Settlement of Property and Debts and Custody of Minor Children""".strip()
+
+  else:
+    document_title = f"""Agreement Regarding Settlement of Property and Debts""".strip()
+
+  hsl_invisible_logic_0 = True
+depends on:
+- minor_children_involved
+field: hsl_invisible_logic_0
+only sets:
+- document_title
+- hsl_invisible_logic_0
+---
+code: |2-
+
+
+  child_or_children = ''
+
+  if ( number_of_children == int( 1 ) ):
+    child_or_children = f"""child""".strip()
+  elif ( number_of_children > int( 1 ) ):
+    child_or_children = f"""children""".strip()
+
+
+
+  hsl_invisible_logic_1 = True
+depends on:
+- number_of_children
+field: hsl_invisible_logic_1
+only sets:
+- child_or_children
+- hsl_invisible_logic_1
+---
+code: |-
+  x.value = DAEmpty(str=f'[VARIABLE `{x.instanceName}` NOT FOUND]')
+  define(x.instanceName, x.value)
+field: x.value
+generic object: DACatchAll
+---
+code: template_variables = TemplateVariables()
+only sets:
+- template_variables
+---
+content: Your documents ${template_variables.file_names}, are attached
+subject: ${template_variables.file_names}
+template: hsl_final_page_email_template
+---
+allow downloading: true
+attachment code: generate_attachments_for_display(hsl_attachments)
+email template: hsl_final_page_email_template
+event: hsl_final_screen
+mandatory: true
+need:
+- hsl_attachments
+question: Here are your documents!
+under: |-
+  % if is_within_bundle():
+  [Return to bundle overview](${get_bundle_page_url()}){: .btn .btn-primary .btn-da .float-right}
+  % endif

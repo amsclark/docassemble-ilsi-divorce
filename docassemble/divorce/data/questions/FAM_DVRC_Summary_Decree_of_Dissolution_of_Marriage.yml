@@ -1,0 +1,369 @@
+code: multi_user = True
+mandatory: true
+---
+features:
+  css:
+  - https://d34mmrz2ojoc57.cloudfront.net/documatecss.css
+  question back button: true
+  use catchall: true
+---
+modules:
+- docassemble.base.util
+- docassemble.numberstowords.numbers_to_words
+- docassemble.commalist.commalist
+- docassemble.mathops.math_ops
+- documate.base.yaml_functions
+---
+metadata:
+  sessions are unique: false
+  short title: FAM_DVRC_Summary_Decree_of_Dissolution_of_Marriage
+  title: FAM_DVRC_Summary_Decree_of_Dissolution_of_Marriage
+---
+objects:
+- children_details: DAList.using(object_type=DAObject,complete_attribute='hsl_complete',there_are_any=True)
+---
+code: |-
+  from documate.base.yaml_functions import load_data_manager_variables
+  load_data_manager_variables(url_args)
+initial: true
+---
+code: |-
+  court_name
+  county_name
+  case_number
+  role_of_party
+  petitioner_name
+  petitioner_name_final_order
+  respondent_name
+  petitioner_full_name
+  respondent_name_final_order
+  children_of_the_marriage
+  minor_children_involved
+  number_of_children
+  page_condition_9736038591
+  children_details.there_are_any
+  hsl_repeating_question_logic_children_details
+  hsl_children_details_table
+  children_details.hsl_reviewed
+  a_party_had_a_name_change
+  role_of_party_with_changed_name
+  party_wants_name_changed_back
+  former_surname_to_be_restored
+  judge_signature_line
+  judge_court_name
+  petitioner_represented
+  petitioner_attorney_name
+  respondent_represented
+  respondent_attorney
+  hsl_review_answers
+  hsl_final_screen
+mandatory: true
+question metadata:
+  hsl interview order: true
+---
+fields:
+- What is the name of the court?: court_name
+  datatype: text
+- What is the name of the county?: county_name
+  datatype: text
+question: Court Information
+---
+fields:
+- What is the case number?: case_number
+  datatype: text
+- What is the role of the party (e.g., petitioner, respondent)?: role_of_party
+  datatype: text
+question: Case Information
+---
+fields:
+- What is the name of the petitioner?: petitioner_name
+  datatype: text
+- What is the name of the petitioner in the final order?: petitioner_name_final_order
+  datatype: text
+question: Petitioner Details
+---
+fields:
+- What is the name of the respondent?: respondent_name
+  datatype: text
+- What is the full name of the petitioner/wife?: petitioner_full_name
+  datatype: text
+- What is the name of the respondent in the final order?: respondent_name_final_order
+  datatype: text
+question: Respondent Details
+---
+fields:
+- Were any children born of the marriage?: children_of_the_marriage
+  datatype: yesnoradio
+- Are any of the children born of the marriage still minors?: minor_children_involved
+  datatype: yesnoradio
+  show if:
+    is: true
+    variable: children_of_the_marriage
+- How many children were born of the marriage?: number_of_children
+  datatype: integer
+  show if:
+    is: true
+    variable: children_of_the_marriage
+question: Children Information
+validation code: |-
+  if children_of_the_marriage != True:
+    minor_children_involved = ''
+  if children_of_the_marriage != True:
+    number_of_children = 0
+---
+code: |-
+  children_details[i].child_name
+  children_details[i].child_age
+  children_details[i].birth_month
+  children_details[i].birth_year
+field: children_details[i].hsl_complete
+question metadata:
+  hsl interview order: true
+---
+code: children_details.there_are_any = True
+only sets:
+- children_details.there_are_any
+---
+fields:
+- Name of Child: children_details[i].child_name
+  datatype: text
+- Age of Child: children_details[i].child_age
+  datatype: integer
+- Birth Month (two-digit): children_details[i].birth_month
+  datatype: integer
+- Birth Year (four-digit): children_details[i].birth_year
+  datatype: integer
+list collect: not children_details.has_been_gathered()
+question: Children Details
+question metadata:
+  hsl repeating item dataname: children_details
+---
+columns:
+- Name of Child: row_item.child_name
+- Age of Child: row_item.child_age
+- Birth Month (two-digit): row_item.birth_month
+- Birth Year (four-digit): row_item.birth_year
+edit:
+- child_name
+rows: children_details
+table: hsl_children_details_table
+---
+field: children_details.hsl_reviewed
+prevent going back: true
+question: ${ word("Please review your entries") }
+subquestion: |-
+  ## Children Details
+  ${ hsl_children_details_table }
+  ${ children_details.add_action() }
+---
+code: |-
+  if not children_details.there_are_any:
+    children_details.hsl_reviewed = True
+depends on: children_details.there_are_any
+field: hsl_repeating_question_logic_children_details
+---
+code: |
+  page_condition_9736038591 = ''
+  #hslPageCondition
+  if children_of_the_marriage != True:
+    children_details.gathered = True
+    children_details.there_are_any = False
+    children_details.hsl_reviewed = True
+depends on:
+- children_of_the_marriage
+field: page_condition_9736038591
+only sets:
+- page_condition_9736038591
+- children_details.gathered
+- children_details.there_are_any
+- children_details.hsl_reviewed
+---
+fields:
+- Did either party change their name as part of the marriage?: a_party_had_a_name_change
+  datatype: yesnoradio
+- Was it the petitioner or respondent whose name was changed?: role_of_party_with_changed_name
+  choices:
+  - Petitioner: Petitioner
+  - Respondent: Respondent
+  datatype: dropdown
+  show if:
+    is: true
+    variable: a_party_had_a_name_change
+- Do they want their former name restored?: party_wants_name_changed_back
+  datatype: yesnoradio
+  show if:
+    is: true
+    variable: a_party_had_a_name_change
+- What is the former surname to be restored?: former_surname_to_be_restored
+  datatype: text
+  show if:
+    is: true
+    variable: party_wants_name_changed_back
+question: Restoration of Name
+validation code: |-
+  if a_party_had_a_name_change != True:
+    role_of_party_with_changed_name = ''
+  if a_party_had_a_name_change != True:
+    party_wants_name_changed_back = ''
+  if party_wants_name_changed_back != True:
+    former_surname_to_be_restored = ''
+---
+fields:
+- What is the judge's signature line?: judge_signature_line
+  datatype: text
+- What is the name of the court for the judge's signature?: judge_court_name
+  datatype: text
+question: Judge and Final Order
+---
+fields:
+- Is petitioner represented by counsel?: petitioner_represented
+  datatype: yesnoradio
+- What is the name of the petitioner's attorney?: petitioner_attorney_name
+  datatype: text
+  show if:
+    is: true
+    variable: petitioner_represented
+- Is respondent represented by counsel?: respondent_represented
+  datatype: yesnoradio
+- What is the name of Respondent's attorney?: respondent_attorney
+  datatype: text
+  show if:
+    is: true
+    variable: respondent_represented
+question: Attorney and Representation
+validation code: |-
+  if petitioner_represented != True:
+    petitioner_attorney_name = ''
+  if respondent_represented != True:
+    respondent_attorney = ''
+---
+field: hsl_review_answers
+prevent going back: true
+question: ${ word("Please review your answers below.") }
+review:
+- note: '####Court Information'
+- Change Answer: court_name
+  button: '**What is the name of the court?**: ${ court_name }'
+- Change Answer: county_name
+  button: '**What is the name of the county?**: ${ county_name }'
+- note: '####Case Information'
+- Change Answer: case_number
+  button: '**What is the case number?**: ${ case_number }'
+- Change Answer: role_of_party
+  button: '**What is the role of the party (e.g., petitioner, respondent)?**: ${ role_of_party
+    }'
+- note: '####Petitioner Details'
+- Change Answer: petitioner_name
+  button: '**What is the name of the petitioner?**: ${ petitioner_name }'
+- Change Answer: petitioner_name_final_order
+  button: '**What is the name of the petitioner in the final order?**: ${ petitioner_name_final_order
+    }'
+- note: '####Respondent Details'
+- Change Answer: respondent_name
+  button: '**What is the name of the respondent?**: ${ respondent_name }'
+- Change Answer: petitioner_full_name
+  button: '**What is the full name of the petitioner/wife?**: ${ petitioner_full_name
+    }'
+- Change Answer: respondent_name_final_order
+  button: '**What is the name of the respondent in the final order?**: ${ respondent_name_final_order
+    }'
+- note: '####Children Information'
+- Change Answer: children_of_the_marriage
+  button: '**Were any children born of the marriage?**: ${ children_of_the_marriage
+    }'
+- Change Answer: minor_children_involved
+  button: '**Are any of the children born of the marriage still minors?**: ${ minor_children_involved
+    }'
+  show if: children_of_the_marriage == True
+- Change Answer: number_of_children
+  button: '**How many children were born of the marriage?**: ${ number_of_children
+    }'
+  show if: children_of_the_marriage == True
+- note: |-
+    ## Children Details
+    ${ hsl_children_details_table }
+    ${ children_details.add_action() }
+  show if: children_of_the_marriage == True
+- note: '####Restoration of Name'
+- Change Answer: a_party_had_a_name_change
+  button: '**Did either party change their name as part of the marriage?**: ${ a_party_had_a_name_change
+    }'
+- Change Answer: role_of_party_with_changed_name
+  button: '**Was it the petitioner or respondent whose name was changed?**: ${ role_of_party_with_changed_name
+    }'
+  show if: a_party_had_a_name_change == True
+- Change Answer: party_wants_name_changed_back
+  button: '**Do they want their former name restored?**: ${ party_wants_name_changed_back
+    }'
+  show if: a_party_had_a_name_change == True
+- Change Answer: former_surname_to_be_restored
+  button: '**What is the former surname to be restored?**: ${ former_surname_to_be_restored
+    }'
+  show if: party_wants_name_changed_back == True
+- note: '####Judge and Final Order'
+- Change Answer: judge_signature_line
+  button: '**What is the judge''s signature line?**: ${ judge_signature_line }'
+- Change Answer: judge_court_name
+  button: '**What is the name of the court for the judge''s signature?**: ${ judge_court_name
+    }'
+- note: '####Attorney and Representation'
+- Change Answer: petitioner_represented
+  button: '**Is petitioner represented by counsel?**: ${ petitioner_represented }'
+- Change Answer: petitioner_attorney_name
+  button: '**What is the name of the petitioner''s attorney?**: ${ petitioner_attorney_name
+    }'
+  show if: petitioner_represented == True
+- Change Answer: respondent_represented
+  button: '**Is respondent represented by counsel?**: ${ respondent_represented }'
+- Change Answer: respondent_attorney
+  button: '**What is the name of Respondent''s attorney?**: ${ respondent_attorney
+    }'
+  show if: respondent_represented == True
+skip undefined: false
+---
+code: completed_at = current_datetime()
+---
+code: |-
+  #hslJsonState
+  #{"formula_groups": [], "output_document_conditions": {"condition_groups": [], "default_documents": []}, "output_documents": [{"display_formats": [], "fields": {}, "filename": "Summary_Decree_of_Dissolution_of_Marriage_blueprint_20250811_131501.docx", "generate_multiple_for": "", "id": "3ac5cfdf-b653-4710-8b45-808ed721757f", "name": "Summary Decree Of Dissolution Of Marriage", "variable_name": "Summary_Decree_of_Dissolution_of_Marriage"}], "pages": [{"dataname": null, "fields": [{"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "court_name"}, {"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "county_name"}], "invisible_logic": null, "is_invisible_logic_question": false, "is_repeating_question": false, "title": "Court Information"}, {"dataname": null, "fields": [{"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "case_number"}, {"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "role_of_party"}], "invisible_logic": null, "is_invisible_logic_question": false, "is_repeating_question": false, "title": "Case Information"}, {"dataname": null, "fields": [{"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "petitioner_name"}, {"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "petitioner_name_final_order"}], "invisible_logic": null, "is_invisible_logic_question": false, "is_repeating_question": false, "title": "Petitioner Details"}, {"dataname": null, "fields": [{"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "respondent_name"}, {"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "petitioner_full_name"}, {"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "respondent_name_final_order"}], "invisible_logic": null, "is_invisible_logic_question": false, "is_repeating_question": false, "title": "Respondent Details"}, {"dataname": null, "fields": [{"choices": [], "composed_values": [], "datatype": "yesnoradio", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "children_of_the_marriage"}, {"choices": [], "composed_values": [], "datatype": "yesnoradio", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "minor_children_involved"}, {"choices": [], "composed_values": [], "datatype": "integer", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "number_of_children"}], "invisible_logic": null, "is_invisible_logic_question": false, "is_repeating_question": false, "title": "Children Information"}, {"dataname": "children_details", "fields": [{"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "child_name"}, {"choices": [], "composed_values": [], "datatype": "integer", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "child_age"}, {"choices": [], "composed_values": [], "datatype": "integer", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "birth_month"}, {"choices": [], "composed_values": [], "datatype": "integer", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "birth_year"}], "invisible_logic": null, "is_invisible_logic_question": false, "is_repeating_question": true, "title": "Children Details"}, {"dataname": null, "fields": [{"choices": [], "composed_values": [], "datatype": "yesnoradio", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "a_party_had_a_name_change"}, {"choices": [], "composed_values": [], "datatype": "yesnoradio", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "party_wants_name_changed_back"}, {"choices": ["Petitioner", "Respondent"], "composed_values": [], "datatype": "dropdown", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "role_of_party_with_changed_name"}, {"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "former_surname_to_be_restored"}], "invisible_logic": null, "is_invisible_logic_question": false, "is_repeating_question": false, "title": "Restoration of Name"}, {"dataname": null, "fields": [{"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "judge_signature_line"}, {"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "judge_court_name"}], "invisible_logic": null, "is_invisible_logic_question": false, "is_repeating_question": false, "title": "Judge and Final Order"}, {"dataname": null, "fields": [{"choices": [], "composed_values": [], "datatype": "yesnoradio", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "petitioner_represented"}, {"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "petitioner_attorney_name"}, {"choices": [], "composed_values": [], "datatype": "yesnoradio", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "respondent_represented"}, {"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "respondent_attorney"}], "invisible_logic": null, "is_invisible_logic_question": false, "is_repeating_question": false, "title": "Attorney and Representation"}], "sections": [], "settings": {"access_permissions": {"allowed_email_addresses": [], "allowed_email_domains": [], "is_public": true, "single_use": false}, "custom_css_link": "", "custom_messages": {"continue_later_email_body": "To resume your workflow,", "continue_later_email_link_text": "click here", "continue_later_email_signature": "", "continue_later_email_title": "Your workflow", "continue_later_link_text": "Save link to continue later", "continue_later_message": "Enter your email below, and we'll send you a link to continue this workflow.", "continue_later_title": "Save and continue later", "document_completion_message": "Here are your documents!", "docusign_email_body": "Please DocuSign ${template_variables.docusign_file_names}\n\nThank You, ${template_variables.organization_name}", "docusign_email_subject": "Complete with DocuSign: ${template_variables.docusign_file_count} Documents from ${template_variables.organization_name}", "email_body": "Thank you for taking the time to fill everything out!", "email_not_sent_message": "Your information was not submitted.", "email_sent_message": "Thank you. Your information has been submitted.", "email_subject": "Here are your documents!", "final_page_email_body": "Your documents ${template_variables.file_names}, are attached", "final_page_email_subject": "${template_variables.file_names}", "hidden_document_completion_message": "Ok, all done."}, "documents_emailed": false, "email_docx": false, "email_file_uploads": false, "email_recipients": [], "hide_documents_from_user": false, "include_continue_later_link": false, "integrations": {}, "language": "", "skip_final_review_page": false}, "version": 2}
+---
+attachment:
+  docx template file: Summary_Decree_of_Dissolution_of_Marriage_blueprint_20250811_131501.docx
+  filename: Summary Decree Of Dissolution Of Marriage
+  name: Summary Decree Of Dissolution Of Marriage
+  variable name: Summary_Decree_of_Dissolution_of_Marriage
+question metadata:
+  id: 3ac5cfdf-b653-4710-8b45-808ed721757f
+---
+code: hsl_attachments = [Summary_Decree_of_Dissolution_of_Marriage]
+need:
+- hsl_review_answers
+only sets:
+- hsl_attachments
+---
+code: |-
+  x.value = DAEmpty(str=f'[VARIABLE `{x.instanceName}` NOT FOUND]')
+  define(x.instanceName, x.value)
+field: x.value
+generic object: DACatchAll
+---
+code: template_variables = TemplateVariables()
+only sets:
+- template_variables
+---
+content: Your documents ${template_variables.file_names}, are attached
+subject: ${template_variables.file_names}
+template: hsl_final_page_email_template
+---
+allow downloading: true
+attachment code: generate_attachments_for_display(hsl_attachments)
+email template: hsl_final_page_email_template
+event: hsl_final_screen
+mandatory: true
+need:
+- hsl_attachments
+question: Here are your documents!
+under: |-
+  % if is_within_bundle():
+  [Return to bundle overview](${get_bundle_page_url()}){: .btn .btn-primary .btn-da .float-right}
+  % endif

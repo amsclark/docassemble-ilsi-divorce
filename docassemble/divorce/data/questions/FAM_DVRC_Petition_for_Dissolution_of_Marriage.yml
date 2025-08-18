@@ -1,0 +1,476 @@
+code: multi_user = True
+mandatory: true
+---
+features:
+  css:
+  - https://d34mmrz2ojoc57.cloudfront.net/documatecss.css
+  question back button: true
+  use catchall: true
+---
+modules:
+- docassemble.base.util
+- docassemble.numberstowords.numbers_to_words
+- docassemble.commalist.commalist
+- docassemble.mathops.math_ops
+- documate.base.yaml_functions
+---
+metadata:
+  sessions are unique: false
+  short title: FAM_DVRC_Petition_for_Dissolution_of_Marriage
+  title: FAM_DVRC_Petition_for_Dissolution_of_Marriage
+---
+objects:
+- children_details: DAList.using(object_type=DAObject,complete_attribute='hsl_complete',there_are_any=True)
+---
+code: |-
+  from documate.base.yaml_functions import load_data_manager_variables
+  load_data_manager_variables(url_args)
+initial: true
+---
+code: |-
+  court_name
+  case_number
+  county_name
+  military_member
+  petitioner_name
+  petitioner_pronoun
+  petitioner_role
+  respondent_name
+  respondent_street_address
+  respondent_residence_city_state
+  respondent_pronoun
+  respondent_county
+  respondent_zip
+  marriage_date
+  separation_date
+  acquired_property_and_debts
+  minor_children_involved
+  number_of_children
+  pregnant
+  which_pregnant
+  children_details.there_are_any
+  hsl_repeating_question_logic_children_details
+  hsl_children_details_table
+  children_details.hsl_reviewed
+  wants_name_changed
+  surname_to_be_restored
+  firm_name
+  attorney_name
+  attorney_number
+  attorney_street_address
+  attorney_city_state_zip
+  attorney_phone_number
+  attorney_email_address
+  attorney_printed_name_certificate
+  attorney_client_role
+  service_method
+  certificate_service_date_filed
+  certificate_service_date_served_by_iefs
+  certificate_service_name_of_person_served_iefs
+  certificate_service_email_of_person_served_iefs
+  certificate_service_date_served_mail
+  certificate_service_mailing_address_of_person_served
+  hsl_review_answers
+  hsl_final_screen
+mandatory: true
+question metadata:
+  hsl interview order: true
+---
+fields:
+- What is the name of the court?: court_name
+  datatype: text
+- What is the case number?: case_number
+  datatype: text
+- What is the court county?: county_name
+  datatype: text
+- Are either petitioner or respondent members of the military?: military_member
+  choices:
+  - Petitioner: Petitioner
+  - Respondent: Respondent
+  - Both: Both
+  - Neither: Neither
+  datatype: dropdown
+question: Court and Case Information
+---
+fields:
+- What is the name of the petitioner?: petitioner_name
+  datatype: text
+- What pronouns are used to refer to the petitioner?: petitioner_pronoun
+  choices:
+  - Male: Male
+  - Female: Female
+  datatype: dropdown
+- What is the role of the petitioner (husband, wife, or spouse)?: petitioner_role
+  choices:
+  - husband: husband
+  - wife: wife
+  - spouse: spouse
+  datatype: dropdown
+question: Petitioner Information
+---
+fields:
+- What is the name of the respondent?: respondent_name
+  datatype: text
+- What is the street address of respondent: respondent_street_address
+  datatype: text
+- What is the city and state where the respondent resides?: respondent_residence_city_state
+  datatype: text
+- What pronouns are used to refer to respondent?: respondent_pronoun
+  choices:
+  - Male: Male
+  - Female: Female
+  datatype: dropdown
+- What is the county where respondent resides: respondent_county
+  datatype: text
+- What is the respondent's zip code?: respondent_zip
+  datatype: text
+question: Respondent Information
+---
+fields:
+- What is the date of marriage (month, day, and year)?: marriage_date
+  datatype: date
+- What is the date of separation (month, day, and year)?: separation_date
+  datatype: date
+- Did the parties acquire any property or debts during their marriage?: acquired_property_and_debts
+  datatype: yesnoradio
+question: Marriage and Separation Details
+validation code: |-
+  if not defined('marriage_date') or not marriage_date:
+    marriage_date = DAEmpty()
+  if not defined('separation_date') or not separation_date:
+    separation_date = DAEmpty()
+---
+fields:
+- Were any children born of the marriage?: minor_children_involved
+  datatype: yesnoradio
+- How many children have been born to the parties?: number_of_children
+  datatype: integer
+  show if:
+    is: true
+    variable: minor_children_involved
+- Is either party pregnant?: pregnant
+  datatype: yesnoradio
+- Which party is pregnant?: which_pregnant
+  choices:
+  - Petitioner: Petitioner
+  - Respondent: Respondent
+  - Both: Both
+  datatype: dropdown
+question: Children Information
+validation code: |-
+  if minor_children_involved != True:
+    number_of_children = 0
+---
+code: |-
+  children_details[i].child_name
+  children_details[i].child_birth_month_year
+  children_details[i].currently_residing_with
+field: children_details[i].hsl_complete
+question metadata:
+  hsl interview order: true
+---
+code: children_details.there_are_any = True
+only sets:
+- children_details.there_are_any
+---
+fields:
+- Name of child: children_details[i].child_name
+  datatype: text
+- Month and year of childs birth: children_details[i].child_birth_month_year
+  datatype: text
+- Currently residing with: children_details[i].currently_residing_with
+  choices:
+  - Petitioner: Petitioner
+  - Respondent: Respondent
+  datatype: dropdown
+list collect: not children_details.has_been_gathered()
+question: Children Details
+question metadata:
+  hsl repeating item dataname: children_details
+---
+columns:
+- Name of child: row_item.child_name
+- Month and year of childs birth: row_item.child_birth_month_year
+- Currently residing with: row_item.currently_residing_with
+edit:
+- child_name
+rows: children_details
+table: hsl_children_details_table
+---
+field: children_details.hsl_reviewed
+prevent going back: true
+question: ${ word("Please review your entries") }
+subquestion: |-
+  ## Children Details
+  ${ hsl_children_details_table }
+  ${ children_details.add_action() }
+---
+code: |-
+  if not children_details.there_are_any:
+    children_details.hsl_reviewed = True
+depends on: children_details.there_are_any
+field: hsl_repeating_question_logic_children_details
+---
+fields:
+- Does the petitioner want their former name restored?: wants_name_changed
+  datatype: yesnoradio
+- What is the surname to be restored?: surname_to_be_restored
+  datatype: text
+  show if:
+    is: true
+    variable: wants_name_changed
+question: Name Restoration
+validation code: |-
+  if wants_name_changed != True:
+    surname_to_be_restored = ''
+---
+fields:
+- What is the name of the law firm?: firm_name
+  datatype: text
+- What is the name of the attorney?: attorney_name
+  datatype: text
+- What is the attorney number?: attorney_number
+  datatype: text
+- What is the street address of the attorney?: attorney_street_address
+  datatype: text
+- What is the city, state, and zip code of the attorney?: attorney_city_state_zip
+  datatype: text
+- What is the phone number of the attorney?: attorney_phone_number
+  datatype: text
+- What is the email address of the attorney?: attorney_email_address
+  datatype: email
+- What is the printed name of the attorney for the certificate of service?: attorney_printed_name_certificate
+  datatype: text
+- What is the party role of the client (e.g., Petitioner)?: attorney_client_role
+  datatype: text
+question: Attorney Information
+---
+fields:
+- What is the method of service?: service_method
+  choices:
+  - Electronic: Electronic
+  - US Mail: US Mail
+  datatype: dropdown
+- What is the date the document was electronically filed?: certificate_service_date_filed
+  datatype: date
+  show if:
+    is: Electronic
+    variable: service_method
+- What is the date the document was served by IEFS?: certificate_service_date_served_by_iefs
+  datatype: date
+  show if:
+    is: Electronic
+    variable: service_method
+- What is the name of the person served by IEFS?: certificate_service_name_of_person_served_iefs
+  datatype: text
+  show if:
+    is: Electronic
+    variable: service_method
+- What is the email address of the person served by IEFS?: certificate_service_email_of_person_served_iefs
+  datatype: email
+  show if:
+    is: Electronic
+    variable: service_method
+- What is the date the document was served by mail?: certificate_service_date_served_mail
+  datatype: date
+  show if:
+    is: US Mail
+    variable: service_method
+- What is the mailing address of the person served by mail?: certificate_service_mailing_address_of_person_served
+  datatype: text
+  show if:
+    is: US Mail
+    variable: service_method
+question: Service of Documents
+validation code: |-
+  if not defined('certificate_service_date_filed') or not certificate_service_date_filed:
+    certificate_service_date_filed = DAEmpty()
+  if not defined('certificate_service_date_served_by_iefs') or not certificate_service_date_served_by_iefs:
+    certificate_service_date_served_by_iefs = DAEmpty()
+  if not defined('certificate_service_date_served_mail') or not certificate_service_date_served_mail:
+    certificate_service_date_served_mail = DAEmpty()
+  if service_method != 'Electronic':
+    certificate_service_date_filed = DAEmpty()
+  if service_method != 'Electronic':
+    certificate_service_date_served_by_iefs = DAEmpty()
+  if service_method != 'Electronic':
+    certificate_service_name_of_person_served_iefs = ''
+  if service_method != 'Electronic':
+    certificate_service_email_of_person_served_iefs = ''
+  if service_method != 'US Mail':
+    certificate_service_date_served_mail = DAEmpty()
+  if service_method != 'US Mail':
+    certificate_service_mailing_address_of_person_served = ''
+---
+field: hsl_review_answers
+prevent going back: true
+question: ${ word("Please review your answers below.") }
+review:
+- note: '####Court and Case Information'
+- Change Answer: court_name
+  button: '**What is the name of the court?**: ${ court_name }'
+- Change Answer: case_number
+  button: '**What is the case number?**: ${ case_number }'
+- Change Answer: county_name
+  button: '**What is the court county?**: ${ county_name }'
+- Change Answer: military_member
+  button: '**Are either petitioner or respondent members of the military?**: ${ military_member
+    }'
+- note: '####Petitioner Information'
+- Change Answer: petitioner_name
+  button: '**What is the name of the petitioner?**: ${ petitioner_name }'
+- Change Answer: petitioner_pronoun
+  button: '**What pronouns are used to refer to the petitioner?**: ${ petitioner_pronoun
+    }'
+- Change Answer: petitioner_role
+  button: '**What is the role of the petitioner (husband, wife, or spouse)?**: ${
+    petitioner_role }'
+- note: '####Respondent Information'
+- Change Answer: respondent_name
+  button: '**What is the name of the respondent?**: ${ respondent_name }'
+- Change Answer: respondent_street_address
+  button: '**What is the street address of respondent**: ${ respondent_street_address
+    }'
+- Change Answer: respondent_residence_city_state
+  button: '**What is the city and state where the respondent resides?**: ${ respondent_residence_city_state
+    }'
+- Change Answer: respondent_pronoun
+  button: '**What pronouns are used to refer to respondent?**: ${ respondent_pronoun
+    }'
+- Change Answer: respondent_county
+  button: '**What is the county where respondent resides**: ${ respondent_county }'
+- Change Answer: respondent_zip
+  button: '**What is the respondent''s zip code?**: ${ respondent_zip }'
+- note: '####Marriage and Separation Details'
+- Change Answer: marriage_date
+  button: '**What is the date of marriage (month, day, and year)?**: ${ marriage_date
+    }'
+- Change Answer: separation_date
+  button: '**What is the date of separation (month, day, and year)?**: ${ separation_date
+    }'
+- Change Answer: acquired_property_and_debts
+  button: '**Did the parties acquire any property or debts during their marriage?**:
+    ${ acquired_property_and_debts }'
+- note: '####Children Information'
+- Change Answer: minor_children_involved
+  button: '**Were any children born of the marriage?**: ${ minor_children_involved
+    }'
+- Change Answer: number_of_children
+  button: '**How many children have been born to the parties?**: ${ number_of_children
+    }'
+  show if: minor_children_involved == True
+- Change Answer: pregnant
+  button: '**Is either party pregnant?**: ${ pregnant }'
+- Change Answer: which_pregnant
+  button: '**Which party is pregnant?**: ${ which_pregnant }'
+- note: |-
+    ## Children Details
+    ${ hsl_children_details_table }
+    ${ children_details.add_action() }
+- note: '####Name Restoration'
+- Change Answer: wants_name_changed
+  button: '**Does the petitioner want their former name restored?**: ${ wants_name_changed
+    }'
+- Change Answer: surname_to_be_restored
+  button: '**What is the surname to be restored?**: ${ surname_to_be_restored }'
+  show if: wants_name_changed == True
+- note: '####Attorney Information'
+- Change Answer: firm_name
+  button: '**What is the name of the law firm?**: ${ firm_name }'
+- Change Answer: attorney_name
+  button: '**What is the name of the attorney?**: ${ attorney_name }'
+- Change Answer: attorney_number
+  button: '**What is the attorney number?**: ${ attorney_number }'
+- Change Answer: attorney_street_address
+  button: '**What is the street address of the attorney?**: ${ attorney_street_address
+    }'
+- Change Answer: attorney_city_state_zip
+  button: '**What is the city, state, and zip code of the attorney?**: ${ attorney_city_state_zip
+    }'
+- Change Answer: attorney_phone_number
+  button: '**What is the phone number of the attorney?**: ${ attorney_phone_number
+    }'
+- Change Answer: attorney_email_address
+  button: '**What is the email address of the attorney?**: ${ attorney_email_address
+    }'
+- Change Answer: attorney_printed_name_certificate
+  button: '**What is the printed name of the attorney for the certificate of service?**:
+    ${ attorney_printed_name_certificate }'
+- Change Answer: attorney_client_role
+  button: '**What is the party role of the client (e.g., Petitioner)?**: ${ attorney_client_role
+    }'
+- note: '####Service of Documents'
+- Change Answer: service_method
+  button: '**What is the method of service?**: ${ service_method }'
+- Change Answer: certificate_service_date_filed
+  button: '**What is the date the document was electronically filed?**: ${ certificate_service_date_filed
+    }'
+  show if: service_method == 'Electronic'
+- Change Answer: certificate_service_date_served_by_iefs
+  button: '**What is the date the document was served by IEFS?**: ${ certificate_service_date_served_by_iefs
+    }'
+  show if: service_method == 'Electronic'
+- Change Answer: certificate_service_name_of_person_served_iefs
+  button: '**What is the name of the person served by IEFS?**: ${ certificate_service_name_of_person_served_iefs
+    }'
+  show if: service_method == 'Electronic'
+- Change Answer: certificate_service_email_of_person_served_iefs
+  button: '**What is the email address of the person served by IEFS?**: ${ certificate_service_email_of_person_served_iefs
+    }'
+  show if: service_method == 'Electronic'
+- Change Answer: certificate_service_date_served_mail
+  button: '**What is the date the document was served by mail?**: ${ certificate_service_date_served_mail
+    }'
+  show if: service_method == 'US Mail'
+- Change Answer: certificate_service_mailing_address_of_person_served
+  button: '**What is the mailing address of the person served by mail?**: ${ certificate_service_mailing_address_of_person_served
+    }'
+  show if: service_method == 'US Mail'
+skip undefined: false
+---
+code: completed_at = current_datetime()
+---
+code: |-
+  #hslJsonState
+  #{"formula_groups": [], "output_document_conditions": {"condition_groups": [], "default_documents": []}, "output_documents": [{"display_formats": [], "fields": {}, "filename": "Petition_for_Dissolution_of_Marriage_blueprint_20250811_191100.docx", "generate_multiple_for": "", "id": "eeb21451-e932-44c0-b616-0bd050f40e3a", "name": "Petition For Dissolution Of Marriage", "variable_name": "Petition_for_Dissolution_of_Marriage"}], "pages": [{"dataname": null, "fields": [{"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "court_name"}, {"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "case_number"}, {"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "county_name"}, {"choices": ["Petitioner", "Respondent", "Both", "Neither"], "composed_values": [], "datatype": "dropdown", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "military_member"}], "invisible_logic": null, "is_invisible_logic_question": false, "is_repeating_question": false, "title": "Court and Case Information"}, {"dataname": null, "fields": [{"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "petitioner_name"}, {"choices": ["Male", "Female"], "composed_values": [], "datatype": "dropdown", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "petitioner_pronoun"}, {"choices": ["husband", "wife", "spouse"], "composed_values": [], "datatype": "dropdown", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "petitioner_role"}], "invisible_logic": null, "is_invisible_logic_question": false, "is_repeating_question": false, "title": "Petitioner Information"}, {"dataname": null, "fields": [{"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "respondent_name"}, {"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "respondent_street_address"}, {"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "respondent_residence_city_state"}, {"choices": ["Male", "Female"], "composed_values": [], "datatype": "dropdown", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "respondent_pronoun"}, {"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "respondent_county"}, {"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "respondent_zip"}], "invisible_logic": null, "is_invisible_logic_question": false, "is_repeating_question": false, "title": "Respondent Information"}, {"dataname": null, "fields": [{"choices": [], "composed_values": [], "datatype": "date", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "marriage_date"}, {"choices": [], "composed_values": [], "datatype": "date", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "separation_date"}, {"choices": [], "composed_values": [], "datatype": "yesnoradio", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "acquired_property_and_debts"}], "invisible_logic": null, "is_invisible_logic_question": false, "is_repeating_question": false, "title": "Marriage and Separation Details"}, {"dataname": null, "fields": [{"choices": [], "composed_values": [], "datatype": "yesnoradio", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "minor_children_involved"}, {"choices": [], "composed_values": [], "datatype": "integer", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "number_of_children"}, {"choices": [], "composed_values": [], "datatype": "yesnoradio", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "pregnant"}, {"choices": ["Petitioner", "Respondent", "Both"], "composed_values": [], "datatype": "dropdown", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "which_pregnant"}], "invisible_logic": null, "is_invisible_logic_question": false, "is_repeating_question": false, "title": "Children Information"}, {"dataname": "children_details", "fields": [{"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "child_name"}, {"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "child_birth_month_year"}, {"choices": ["Petitioner", "Respondent"], "composed_values": [], "datatype": "dropdown", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "currently_residing_with"}], "invisible_logic": null, "is_invisible_logic_question": false, "is_repeating_question": true, "title": "Children Details"}, {"dataname": null, "fields": [{"choices": [], "composed_values": [], "datatype": "yesnoradio", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "wants_name_changed"}, {"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "surname_to_be_restored"}], "invisible_logic": null, "is_invisible_logic_question": false, "is_repeating_question": false, "title": "Name Restoration"}, {"dataname": null, "fields": [{"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "firm_name"}, {"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "attorney_name"}, {"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "attorney_number"}, {"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "attorney_street_address"}, {"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "attorney_city_state_zip"}, {"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "attorney_phone_number"}, {"choices": [], "composed_values": [], "datatype": "email", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "attorney_email_address"}, {"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "attorney_printed_name_certificate"}, {"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "attorney_client_role"}], "invisible_logic": null, "is_invisible_logic_question": false, "is_repeating_question": false, "title": "Attorney Information"}, {"dataname": null, "fields": [{"choices": ["Electronic", "US Mail"], "composed_values": [], "datatype": "dropdown", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "service_method"}, {"choices": [], "composed_values": [], "datatype": "date", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "certificate_service_date_filed"}, {"choices": [], "composed_values": [], "datatype": "date", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "certificate_service_date_served_by_iefs"}, {"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "certificate_service_name_of_person_served_iefs"}, {"choices": [], "composed_values": [], "datatype": "email", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "certificate_service_email_of_person_served_iefs"}, {"choices": [], "composed_values": [], "datatype": "date", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "certificate_service_date_served_mail"}, {"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "certificate_service_mailing_address_of_person_served"}], "invisible_logic": null, "is_invisible_logic_question": false, "is_repeating_question": false, "title": "Service of Documents"}], "sections": [], "settings": {"access_permissions": {"allowed_email_addresses": [], "allowed_email_domains": [], "is_public": true, "single_use": false}, "custom_css_link": "", "custom_messages": {"continue_later_email_body": "To resume your workflow,", "continue_later_email_link_text": "click here", "continue_later_email_signature": "", "continue_later_email_title": "Your workflow", "continue_later_link_text": "Save link to continue later", "continue_later_message": "Enter your email below, and we'll send you a link to continue this workflow.", "continue_later_title": "Save and continue later", "document_completion_message": "Here are your documents!", "docusign_email_body": "Please DocuSign ${template_variables.docusign_file_names}\n\nThank You, ${template_variables.organization_name}", "docusign_email_subject": "Complete with DocuSign: ${template_variables.docusign_file_count} Documents from ${template_variables.organization_name}", "email_body": "Thank you for taking the time to fill everything out!", "email_not_sent_message": "Your information was not submitted.", "email_sent_message": "Thank you. Your information has been submitted.", "email_subject": "Here are your documents!", "final_page_email_body": "Your documents ${template_variables.file_names}, are attached", "final_page_email_subject": "${template_variables.file_names}", "hidden_document_completion_message": "Ok, all done."}, "documents_emailed": false, "email_docx": false, "email_file_uploads": false, "email_recipients": [], "hide_documents_from_user": false, "include_continue_later_link": false, "integrations": {}, "language": "", "skip_final_review_page": false}, "version": 2}
+---
+attachment:
+  docx template file: Petition_for_Dissolution_of_Marriage_blueprint_20250811_191100.docx
+  filename: Petition For Dissolution Of Marriage
+  name: Petition For Dissolution Of Marriage
+  variable name: Petition_for_Dissolution_of_Marriage
+question metadata:
+  id: eeb21451-e932-44c0-b616-0bd050f40e3a
+---
+code: hsl_attachments = [Petition_for_Dissolution_of_Marriage]
+need:
+- hsl_review_answers
+only sets:
+- hsl_attachments
+---
+code: |-
+  x.value = DAEmpty(str=f'[VARIABLE `{x.instanceName}` NOT FOUND]')
+  define(x.instanceName, x.value)
+field: x.value
+generic object: DACatchAll
+---
+code: template_variables = TemplateVariables()
+only sets:
+- template_variables
+---
+content: Your documents ${template_variables.file_names}, are attached
+subject: ${template_variables.file_names}
+template: hsl_final_page_email_template
+---
+allow downloading: true
+attachment code: generate_attachments_for_display(hsl_attachments)
+email template: hsl_final_page_email_template
+event: hsl_final_screen
+mandatory: true
+need:
+- hsl_attachments
+question: Here are your documents!
+under: |-
+  % if is_within_bundle():
+  [Return to bundle overview](${get_bundle_page_url()}){: .btn .btn-primary .btn-da .float-right}
+  % endif

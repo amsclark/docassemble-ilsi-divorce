@@ -1,0 +1,291 @@
+code: multi_user = True
+mandatory: true
+---
+features:
+  css:
+  - https://d34mmrz2ojoc57.cloudfront.net/documatecss.css
+  question back button: true
+  use catchall: true
+---
+modules:
+- docassemble.base.util
+- docassemble.numberstowords.numbers_to_words
+- docassemble.commalist.commalist
+- docassemble.mathops.math_ops
+- documate.base.yaml_functions
+---
+metadata:
+  sessions are unique: false
+  short title: FAM_DVRC_Civil_Appearance_Form_for_Attorneys
+  title: FAM_DVRC_Civil_Appearance_Form_for_Attorneys
+---
+code: |-
+  from documate.base.yaml_functions import load_data_manager_variables
+  load_data_manager_variables(url_args)
+initial: true
+---
+code: |-
+  court_name
+  county_name
+  case_number
+  petitioner_name
+  respondent_name
+  initiating_responding_or_intervening
+  name_of_party_attorney_appearing_for
+  phone_of_party_attorney_appearing_for
+  address_of_party_attorney_appearing_for
+  attorney_name
+  attorney_number
+  firm_name
+  firm_mailing_address
+  attorney_phone
+  attorney_fax
+  attorney_email
+  person_served_name
+  electronically_or_mail
+  person_served_email
+  person_served_postal_mail_address
+  mail_served_date
+  electronic_filing_date
+  date_served_by_IEFS
+  case_type
+  is_child_support_case
+  hsl_review_answers
+  hsl_final_screen
+mandatory: true
+question metadata:
+  hsl interview order: true
+---
+fields:
+- What is the name of the court?: court_name
+  datatype: text
+- What is the name of the county?: county_name
+  datatype: text
+- What is the case number (if it has been assigned by the Clerk): case_number
+  datatype: text
+  required: false
+question: Court Information
+---
+fields:
+- What is the name of the petitioner?: petitioner_name
+  datatype: text
+- What is the name of the respondent?: respondent_name
+  datatype: text
+- 'The party on whose behalf the appearance form is being filed is: ': initiating_responding_or_intervening
+  choices:
+  - Initiating: Initiating
+  - Responding: Responding
+  - Intervening: Intervening
+  datatype: dropdown
+- What is the name of the party for whom the attorney is entering an appearance?: name_of_party_attorney_appearing_for
+  datatype: text
+- What is the phone number of the party for whom the attorney is entering an appearance?: phone_of_party_attorney_appearing_for
+  datatype: area
+- What is the address of the party for whom the attorney is entering an appearance?: address_of_party_attorney_appearing_for
+  datatype: area
+question: Party Information
+---
+fields:
+- What is the name of the attorney?: attorney_name
+  datatype: text
+- What is the attorney's bar number?: attorney_number
+  datatype: text
+- What is the name of the attorney's firm?: firm_name
+  datatype: text
+- What is the mailing address of the attorney's firm?: firm_mailing_address
+  datatype: area
+- What is the attorney's phone number?: attorney_phone
+  datatype: text
+- What is the attorney's fax number?: attorney_fax
+  datatype: text
+- What is the attorney's email address?: attorney_email
+  datatype: email
+question: Attorney Information
+---
+fields:
+- What is the name of the person served in the Certificate of Service?: person_served_name
+  datatype: text
+- For the certificate of service, will the other party be served electronically or by mail?: electronically_or_mail
+  choices:
+  - Electronically: Electronically
+  - Mail: Mail
+  datatype: dropdown
+- What is the email address of the party served?: person_served_email
+  datatype: email
+  show if:
+    is: Electronically
+    variable: electronically_or_mail
+- What is the mailing address of the person served?: person_served_postal_mail_address
+  datatype: area
+  show if:
+    is: Mail
+    variable: electronically_or_mail
+- What is the date served by mail?: mail_served_date
+  datatype: date
+  show if:
+    is: Mail
+    variable: electronically_or_mail
+- What date was the appearance filed electronically?: electronic_filing_date
+  datatype: date
+  show if:
+    is: Electronically
+    variable: electronically_or_mail
+- What date was the appearance served via IEFS on the other party?: date_served_by_IEFS
+  datatype: date
+  show if:
+    is: Electronically
+    variable: electronically_or_mail
+question: Legal Service Details
+validation code: |-
+  if not defined('mail_served_date') or not mail_served_date:
+    mail_served_date = DAEmpty()
+  if not defined('electronic_filing_date') or not electronic_filing_date:
+    electronic_filing_date = DAEmpty()
+  if not defined('date_served_by_IEFS') or not date_served_by_IEFS:
+    date_served_by_IEFS = DAEmpty()
+  if electronically_or_mail != 'Electronically':
+    person_served_email = ''
+  if electronically_or_mail != 'Mail':
+    person_served_postal_mail_address = ''
+  if electronically_or_mail != 'Mail':
+    mail_served_date = DAEmpty()
+  if electronically_or_mail != 'Electronically':
+    electronic_filing_date = DAEmpty()
+  if electronically_or_mail != 'Electronically':
+    date_served_by_IEFS = DAEmpty()
+---
+fields:
+- What is the case type? (DC - Domestic Relations with Children; DN - Domestic Relations without Children): case_type
+  choices:
+  - DC: DC
+  - DN: DN
+  datatype: dropdown
+- Is this a child support case?: is_child_support_case
+  datatype: yesnoradio
+question: Case Type and Details
+---
+field: hsl_review_answers
+prevent going back: true
+question: ${ word("Please review your answers below.") }
+review:
+- note: '####Court Information'
+- Change Answer: court_name
+  button: '**What is the name of the court?**: ${ court_name }'
+- Change Answer: county_name
+  button: '**What is the name of the county?**: ${ county_name }'
+- Change Answer: case_number
+  button: '**What is the case number (if it has been assigned by the Clerk)**: ${
+    case_number }'
+- note: '####Party Information'
+- Change Answer: petitioner_name
+  button: '**What is the name of the petitioner?**: ${ petitioner_name }'
+- Change Answer: respondent_name
+  button: '**What is the name of the respondent?**: ${ respondent_name }'
+- Change Answer: initiating_responding_or_intervening
+  button: '**The party on whose behalf the appearance form is being filed is: **:
+    ${ initiating_responding_or_intervening }'
+- Change Answer: name_of_party_attorney_appearing_for
+  button: '**What is the name of the party for whom the attorney is entering an appearance?**:
+    ${ name_of_party_attorney_appearing_for }'
+- Change Answer: phone_of_party_attorney_appearing_for
+  button: '**What is the phone number of the party for whom the attorney is entering
+    an appearance?**: ${ phone_of_party_attorney_appearing_for }'
+- Change Answer: address_of_party_attorney_appearing_for
+  button: '**What is the address of the party for whom the attorney is entering an
+    appearance?**: ${ address_of_party_attorney_appearing_for }'
+- note: '####Attorney Information'
+- Change Answer: attorney_name
+  button: '**What is the name of the attorney?**: ${ attorney_name }'
+- Change Answer: attorney_number
+  button: '**What is the attorney''s bar number?**: ${ attorney_number }'
+- Change Answer: firm_name
+  button: '**What is the name of the attorney''s firm?**: ${ firm_name }'
+- Change Answer: firm_mailing_address
+  button: '**What is the mailing address of the attorney''s firm?**: ${ firm_mailing_address
+    }'
+- Change Answer: attorney_phone
+  button: '**What is the attorney''s phone number?**: ${ attorney_phone }'
+- Change Answer: attorney_fax
+  button: '**What is the attorney''s fax number?**: ${ attorney_fax }'
+- Change Answer: attorney_email
+  button: '**What is the attorney''s email address?**: ${ attorney_email }'
+- note: '####Legal Service Details'
+- Change Answer: person_served_name
+  button: '**What is the name of the person served in the Certificate of Service?**:
+    ${ person_served_name }'
+- Change Answer: electronically_or_mail
+  button: '**For the certificate of service, will the other party be served electronically
+    or by mail?**: ${ electronically_or_mail }'
+- Change Answer: person_served_email
+  button: '**What is the email address of the party served?**: ${ person_served_email
+    }'
+  show if: electronically_or_mail == 'Electronically'
+- Change Answer: person_served_postal_mail_address
+  button: '**What is the mailing address of the person served?**: ${ person_served_postal_mail_address
+    }'
+  show if: electronically_or_mail == 'Mail'
+- Change Answer: mail_served_date
+  button: '**What is the date served by mail?**: ${ mail_served_date }'
+  show if: electronically_or_mail == 'Mail'
+- Change Answer: electronic_filing_date
+  button: '**What date was the appearance filed electronically?**: ${ electronic_filing_date
+    }'
+  show if: electronically_or_mail == 'Electronically'
+- Change Answer: date_served_by_IEFS
+  button: '**What date was the appearance served via IEFS on the other party?**: ${
+    date_served_by_IEFS }'
+  show if: electronically_or_mail == 'Electronically'
+- note: '####Case Type and Details'
+- Change Answer: case_type
+  button: '**What is the case type? (DC - Domestic Relations with Children; DN - Domestic
+    Relations without Children)**: ${ case_type }'
+- Change Answer: is_child_support_case
+  button: '**Is this a child support case?**: ${ is_child_support_case }'
+skip undefined: false
+---
+code: completed_at = current_datetime()
+---
+code: |-
+  #hslJsonState
+  #{"formula_groups": [], "output_document_conditions": {"condition_groups": [], "default_documents": []}, "output_documents": [{"display_formats": [], "fields": {}, "filename": "Civil_Appearance_Form_for_Attorneys_2024_blueprint_20250811_160158.docx", "generate_multiple_for": "", "id": "7e2d7852-f161-482f-800a-6c34b15f91e5", "name": "Civil Appearance Form For Attorneys 2024", "variable_name": "Civil_Appearance_Form_for_Attorneys_2024"}], "pages": [{"dataname": null, "fields": [{"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "court_name"}, {"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "county_name"}, {"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "case_number"}], "invisible_logic": null, "is_invisible_logic_question": false, "is_repeating_question": false, "title": "Court Information"}, {"dataname": null, "fields": [{"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "petitioner_name"}, {"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "respondent_name"}, {"choices": ["Initiating", "Responding", "Intervening"], "composed_values": [], "datatype": "dropdown", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "initiating_responding_or_intervening"}, {"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "name_of_party_attorney_appearing_for"}, {"choices": [], "composed_values": [], "datatype": "area", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "phone_of_party_attorney_appearing_for"}, {"choices": [], "composed_values": [], "datatype": "area", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "address_of_party_attorney_appearing_for"}], "invisible_logic": null, "is_invisible_logic_question": false, "is_repeating_question": false, "title": "Party Information"}, {"dataname": null, "fields": [{"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "attorney_name"}, {"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "attorney_number"}, {"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "firm_name"}, {"choices": [], "composed_values": [], "datatype": "area", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "firm_mailing_address"}, {"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "attorney_phone"}, {"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "attorney_fax"}, {"choices": [], "composed_values": [], "datatype": "email", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "attorney_email"}], "invisible_logic": null, "is_invisible_logic_question": false, "is_repeating_question": false, "title": "Attorney Information"}, {"dataname": null, "fields": [{"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "person_served_name"}, {"choices": ["Electronically", "Mail"], "composed_values": [], "datatype": "dropdown", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "electronically_or_mail"}, {"choices": [], "composed_values": [], "datatype": "email", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "person_served_email"}, {"choices": [], "composed_values": [], "datatype": "area", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "person_served_postal_mail_address"}, {"choices": [], "composed_values": [], "datatype": "date", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "mail_served_date"}, {"choices": [], "composed_values": [], "datatype": "date", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "electronic_filing_date"}, {"choices": [], "composed_values": [], "datatype": "date", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "date_served_by_IEFS"}], "invisible_logic": null, "is_invisible_logic_question": false, "is_repeating_question": false, "title": "Legal Service Details"}, {"dataname": null, "fields": [{"choices": ["DC", "DN"], "composed_values": [], "datatype": "dropdown", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "case_type"}, {"choices": [], "composed_values": [], "datatype": "yesnoradio", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "is_child_support_case"}], "invisible_logic": null, "is_invisible_logic_question": false, "is_repeating_question": false, "title": "Case Type and Details"}], "sections": [], "settings": {"access_permissions": {"allowed_email_addresses": [], "allowed_email_domains": [], "is_public": true, "single_use": false}, "custom_css_link": "", "custom_messages": {"continue_later_email_body": "To resume your workflow,", "continue_later_email_link_text": "click here", "continue_later_email_signature": "", "continue_later_email_title": "Your workflow", "continue_later_link_text": "Save link to continue later", "continue_later_message": "Enter your email below, and we'll send you a link to continue this workflow.", "continue_later_title": "Save and continue later", "document_completion_message": "Here are your documents!", "docusign_email_body": "Please DocuSign ${template_variables.docusign_file_names}\n\nThank You, ${template_variables.organization_name}", "docusign_email_subject": "Complete with DocuSign: ${template_variables.docusign_file_count} Documents from ${template_variables.organization_name}", "email_body": "Thank you for taking the time to fill everything out!", "email_not_sent_message": "Your information was not submitted.", "email_sent_message": "Thank you. Your information has been submitted.", "email_subject": "Here are your documents!", "final_page_email_body": "Your documents ${template_variables.file_names}, are attached", "final_page_email_subject": "${template_variables.file_names}", "hidden_document_completion_message": "Ok, all done."}, "documents_emailed": false, "email_docx": false, "email_file_uploads": false, "email_recipients": [], "hide_documents_from_user": false, "include_continue_later_link": false, "integrations": {}, "language": "", "skip_final_review_page": false}, "version": 2}
+---
+attachment:
+  docx template file: Civil_Appearance_Form_for_Attorneys_2024_blueprint_20250811_160158.docx
+  filename: Civil Appearance Form For Attorneys 2024
+  name: Civil Appearance Form For Attorneys 2024
+  variable name: Civil_Appearance_Form_for_Attorneys_2024
+question metadata:
+  id: 7e2d7852-f161-482f-800a-6c34b15f91e5
+---
+code: hsl_attachments = [Civil_Appearance_Form_for_Attorneys_2024]
+need:
+- hsl_review_answers
+only sets:
+- hsl_attachments
+---
+code: |-
+  x.value = DAEmpty(str=f'[VARIABLE `{x.instanceName}` NOT FOUND]')
+  define(x.instanceName, x.value)
+field: x.value
+generic object: DACatchAll
+---
+code: template_variables = TemplateVariables()
+only sets:
+- template_variables
+---
+content: Your documents ${template_variables.file_names}, are attached
+subject: ${template_variables.file_names}
+template: hsl_final_page_email_template
+---
+allow downloading: true
+attachment code: generate_attachments_for_display(hsl_attachments)
+email template: hsl_final_page_email_template
+event: hsl_final_screen
+mandatory: true
+need:
+- hsl_attachments
+question: Here are your documents!
+under: |-
+  % if is_within_bundle():
+  [Return to bundle overview](${get_bundle_page_url()}){: .btn .btn-primary .btn-da .float-right}
+  % endif

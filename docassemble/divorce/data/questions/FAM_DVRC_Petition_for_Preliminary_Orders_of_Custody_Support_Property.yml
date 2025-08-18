@@ -1,0 +1,374 @@
+code: multi_user = True
+mandatory: true
+---
+features:
+  css:
+  - https://d34mmrz2ojoc57.cloudfront.net/documatecss.css
+  question back button: true
+  use catchall: true
+---
+modules:
+- docassemble.base.util
+- docassemble.numberstowords.numbers_to_words
+- docassemble.commalist.commalist
+- docassemble.mathops.math_ops
+- documate.base.yaml_functions
+---
+metadata:
+  sessions are unique: false
+  short title: FAM_DVRC_Petition_for_Preliminary_Orders_of_Custody_Support_Property
+  title: FAM_DVRC_Petition_for_Preliminary_Orders_of_Custody_Support_Property
+---
+objects:
+- children_details: DAList.using(object_type=DAObject,complete_attribute='hsl_complete',there_are_any=True)
+---
+code: |-
+  from documate.base.yaml_functions import load_data_manager_variables
+  load_data_manager_variables(url_args)
+initial: true
+---
+code: |-
+  court_name
+  county_name
+  case_number
+  petitioner_name
+  respondent_name
+  petitioner_pronoun
+  petitioner_minor_children_pronoun
+  client_party_role
+  number_of_children
+  children_details.there_are_any
+  hsl_repeating_question_logic_children_details
+  hsl_children_details_table
+  children_details.hsl_reviewed
+  supervised_visitation
+  facts_supporting_supervised_visitation
+  asking_for_shared_vehicle
+  car_make_model_year_color
+  petitioner_signature_date
+  petitioner_signature_name
+  firm_name
+  attorney_signature
+  attorney_number
+  attorney_street_address
+  attorney_city_state_zip
+  attorney_phone_number
+  attorney_email_address
+  attorney_printed_name
+  date_filed
+  date_served_by_iefs
+  person_served_by_iefs_name
+  person_served_by_iefs_email
+  date_served_by_mail
+  person_served_by_mail_address
+  person_served_email_1
+  person_served_mailing_address_1
+  service_method
+  hsl_review_answers
+  hsl_final_screen
+mandatory: true
+question metadata:
+  hsl interview order: true
+---
+fields:
+- What is the name of the court?: court_name
+  datatype: text
+- What is the name of the county?: county_name
+  datatype: text
+- What is the case number?: case_number
+  datatype: text
+question: Court Information
+---
+fields:
+- What is the name of the petitioner?: petitioner_name
+  datatype: text
+- What is the name of the respondent?: respondent_name
+  datatype: text
+- What is the petitioner's pronoun?: petitioner_pronoun
+  datatype: text
+- What is the pronoun for the petitioner and minor children?: petitioner_minor_children_pronoun
+  datatype: text
+- What is the party role of the client (e.g., Petitioner)?: client_party_role
+  datatype: text
+question: Party Information
+---
+fields:
+- How many children were born to the parties?: number_of_children
+  datatype: number
+question: Children Information
+---
+code: |-
+  children_details[i].child_name
+  children_details[i].child_age
+field: children_details[i].hsl_complete
+question metadata:
+  hsl interview order: true
+---
+code: children_details.there_are_any = True
+only sets:
+- children_details.there_are_any
+---
+fields:
+- Name of child: children_details[i].child_name
+  datatype: text
+- Age of child: children_details[i].child_age
+  datatype: text
+list collect: not children_details.has_been_gathered()
+question: Children Details
+question metadata:
+  hsl repeating item dataname: children_details
+---
+columns:
+- Name of child: row_item.child_name
+- Age of child: row_item.child_age
+edit:
+- child_name
+rows: children_details
+table: hsl_children_details_table
+---
+field: children_details.hsl_reviewed
+prevent going back: true
+question: ${ word("Please review your entries") }
+subquestion: |-
+  ## Children Details
+  ${ hsl_children_details_table }
+  ${ children_details.add_action() }
+---
+code: |-
+  if not children_details.there_are_any:
+    children_details.hsl_reviewed = True
+depends on: children_details.there_are_any
+field: hsl_repeating_question_logic_children_details
+---
+fields:
+- Does visitation need to be supervised?: supervised_visitation
+  datatype: yesnoradio
+- What are the facts supporting the request that visitation be supervised?: facts_supporting_supervised_visitation
+  datatype: area
+  show if:
+    is: true
+    variable: supervised_visitation
+- Is Petitioner asking for usage of the parties' vehicle?: asking_for_shared_vehicle
+  datatype: yesnoradio
+- What is the color, year, make and model of the vehicle?: car_make_model_year_color
+  datatype: text
+  show if:
+    is: true
+    variable: asking_for_shared_vehicle
+question: Requested Relief
+validation code: |-
+  if supervised_visitation != True:
+    facts_supporting_supervised_visitation = ''
+  if asking_for_shared_vehicle != True:
+    car_make_model_year_color = ''
+---
+fields:
+- What is the date of the petitioner's signature?: petitioner_signature_date
+  datatype: date
+- What is the name of the petitioner for the signature?: petitioner_signature_name
+  datatype: text
+question: Signature and Affirmation
+validation code: |-
+  if not defined('petitioner_signature_date') or not petitioner_signature_date:
+    petitioner_signature_date = DAEmpty()
+---
+fields:
+- What is the name of the law firm?: firm_name
+  datatype: text
+- What is the signature of the attorney of record?: attorney_signature
+  datatype: text
+- What is the attorney's number?: attorney_number
+  datatype: text
+- What is the street address of the attorney?: attorney_street_address
+  datatype: text
+- What is the city, state, and zip code of the attorney?: attorney_city_state_zip
+  datatype: text
+- What is the phone number of the attorney?: attorney_phone_number
+  datatype: text
+- What is the email address of the attorney?: attorney_email_address
+  datatype: email
+- What is the printed name of the attorney?: attorney_printed_name
+  datatype: text
+question: Attorney Information
+---
+fields:
+- What is the date the document was filed?: date_filed
+  datatype: date
+- What is the date the document was served by IEFS?: date_served_by_iefs
+  datatype: date
+- What is the name of the person served by IEFS?: person_served_by_iefs_name
+  datatype: text
+- What is the email address of the person served by IEFS?: person_served_by_iefs_email
+  datatype: email
+- What is the date the document was served by mail?: date_served_by_mail
+  datatype: date
+- What is the mailing address of the person served by mail?: person_served_by_mail_address
+  datatype: text
+- What is the email address of the person served?: person_served_email_1
+  datatype: email
+- What is the mailing address of the person served?: person_served_mailing_address_1
+  datatype: text
+- What is the method of service?: service_method
+  choices:
+  - Electronic: Electronic
+  - Mail: Mail
+  datatype: dropdown
+question: Service of Process
+validation code: |-
+  if not defined('date_filed') or not date_filed:
+    date_filed = DAEmpty()
+  if not defined('date_served_by_iefs') or not date_served_by_iefs:
+    date_served_by_iefs = DAEmpty()
+  if not defined('date_served_by_mail') or not date_served_by_mail:
+    date_served_by_mail = DAEmpty()
+---
+field: hsl_review_answers
+prevent going back: true
+question: ${ word("Please review your answers below.") }
+review:
+- note: '####Court Information'
+- Change Answer: court_name
+  button: '**What is the name of the court?**: ${ court_name }'
+- Change Answer: county_name
+  button: '**What is the name of the county?**: ${ county_name }'
+- Change Answer: case_number
+  button: '**What is the case number?**: ${ case_number }'
+- note: '####Party Information'
+- Change Answer: petitioner_name
+  button: '**What is the name of the petitioner?**: ${ petitioner_name }'
+- Change Answer: respondent_name
+  button: '**What is the name of the respondent?**: ${ respondent_name }'
+- Change Answer: petitioner_pronoun
+  button: '**What is the petitioner''s pronoun?**: ${ petitioner_pronoun }'
+- Change Answer: petitioner_minor_children_pronoun
+  button: '**What is the pronoun for the petitioner and minor children?**: ${ petitioner_minor_children_pronoun
+    }'
+- Change Answer: client_party_role
+  button: '**What is the party role of the client (e.g., Petitioner)?**: ${ client_party_role
+    }'
+- note: '####Children Information'
+- Change Answer: number_of_children
+  button: '**How many children were born to the parties?**: ${ number_of_children
+    }'
+- note: |-
+    ## Children Details
+    ${ hsl_children_details_table }
+    ${ children_details.add_action() }
+- note: '####Requested Relief'
+- Change Answer: supervised_visitation
+  button: '**Does visitation need to be supervised?**: ${ supervised_visitation }'
+- Change Answer: facts_supporting_supervised_visitation
+  button: '**What are the facts supporting the request that visitation be supervised?**:
+    ${ facts_supporting_supervised_visitation }'
+  show if: supervised_visitation == True
+- Change Answer: asking_for_shared_vehicle
+  button: '**Is Petitioner asking for usage of the parties'' vehicle?**: ${ asking_for_shared_vehicle
+    }'
+- Change Answer: car_make_model_year_color
+  button: '**What is the color, year, make and model of the vehicle?**: ${ car_make_model_year_color
+    }'
+  show if: asking_for_shared_vehicle == True
+- note: '####Signature and Affirmation'
+- Change Answer: petitioner_signature_date
+  button: '**What is the date of the petitioner''s signature?**: ${ petitioner_signature_date
+    }'
+- Change Answer: petitioner_signature_name
+  button: '**What is the name of the petitioner for the signature?**: ${ petitioner_signature_name
+    }'
+- note: '####Attorney Information'
+- Change Answer: firm_name
+  button: '**What is the name of the law firm?**: ${ firm_name }'
+- Change Answer: attorney_signature
+  button: '**What is the signature of the attorney of record?**: ${ attorney_signature
+    }'
+- Change Answer: attorney_number
+  button: '**What is the attorney''s number?**: ${ attorney_number }'
+- Change Answer: attorney_street_address
+  button: '**What is the street address of the attorney?**: ${ attorney_street_address
+    }'
+- Change Answer: attorney_city_state_zip
+  button: '**What is the city, state, and zip code of the attorney?**: ${ attorney_city_state_zip
+    }'
+- Change Answer: attorney_phone_number
+  button: '**What is the phone number of the attorney?**: ${ attorney_phone_number
+    }'
+- Change Answer: attorney_email_address
+  button: '**What is the email address of the attorney?**: ${ attorney_email_address
+    }'
+- Change Answer: attorney_printed_name
+  button: '**What is the printed name of the attorney?**: ${ attorney_printed_name
+    }'
+- note: '####Service of Process'
+- Change Answer: date_filed
+  button: '**What is the date the document was filed?**: ${ date_filed }'
+- Change Answer: date_served_by_iefs
+  button: '**What is the date the document was served by IEFS?**: ${ date_served_by_iefs
+    }'
+- Change Answer: person_served_by_iefs_name
+  button: '**What is the name of the person served by IEFS?**: ${ person_served_by_iefs_name
+    }'
+- Change Answer: person_served_by_iefs_email
+  button: '**What is the email address of the person served by IEFS?**: ${ person_served_by_iefs_email
+    }'
+- Change Answer: date_served_by_mail
+  button: '**What is the date the document was served by mail?**: ${ date_served_by_mail
+    }'
+- Change Answer: person_served_by_mail_address
+  button: '**What is the mailing address of the person served by mail?**: ${ person_served_by_mail_address
+    }'
+- Change Answer: person_served_email_1
+  button: '**What is the email address of the person served?**: ${ person_served_email_1
+    }'
+- Change Answer: person_served_mailing_address_1
+  button: '**What is the mailing address of the person served?**: ${ person_served_mailing_address_1
+    }'
+- Change Answer: service_method
+  button: '**What is the method of service?**: ${ service_method }'
+skip undefined: false
+---
+code: completed_at = current_datetime()
+---
+code: |-
+  #hslJsonState
+  #{"formula_groups": [], "output_document_conditions": {"condition_groups": [], "default_documents": []}, "output_documents": [{"display_formats": [], "fields": {}, "filename": "Petition_for_preliminary_orders_of_custody_support_property_2024_blueprint_20250812_082511.docx", "generate_multiple_for": "", "id": "a391b772-4bbc-4534-8910-5ee60c355888", "name": "Petition For Preliminary Orders Of Custody Support Property 2024", "variable_name": "Petition_for_preliminary_orders_of_custody_support_property_2024"}], "pages": [{"dataname": null, "fields": [{"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "court_name"}, {"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "county_name"}, {"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "case_number"}], "invisible_logic": null, "is_invisible_logic_question": false, "is_repeating_question": false, "title": "Court Information"}, {"dataname": null, "fields": [{"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "petitioner_name"}, {"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "respondent_name"}, {"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "petitioner_pronoun"}, {"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "petitioner_minor_children_pronoun"}, {"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "client_party_role"}], "invisible_logic": null, "is_invisible_logic_question": false, "is_repeating_question": false, "title": "Party Information"}, {"dataname": null, "fields": [{"choices": [], "composed_values": [], "datatype": "number", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "number_of_children"}], "invisible_logic": null, "is_invisible_logic_question": false, "is_repeating_question": false, "title": "Children Information"}, {"dataname": "children_details", "fields": [{"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "child_name"}, {"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "child_age"}], "invisible_logic": null, "is_invisible_logic_question": false, "is_repeating_question": true, "title": "Children Details"}, {"dataname": null, "fields": [{"choices": [], "composed_values": [], "datatype": "yesnoradio", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "supervised_visitation"}, {"choices": [], "composed_values": [], "datatype": "area", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "facts_supporting_supervised_visitation"}, {"choices": [], "composed_values": [], "datatype": "yesnoradio", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "asking_for_shared_vehicle"}, {"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "car_make_model_year_color"}], "invisible_logic": null, "is_invisible_logic_question": false, "is_repeating_question": false, "title": "Requested Relief"}, {"dataname": null, "fields": [{"choices": [], "composed_values": [], "datatype": "date", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "petitioner_signature_date"}, {"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "petitioner_signature_name"}], "invisible_logic": null, "is_invisible_logic_question": false, "is_repeating_question": false, "title": "Signature and Affirmation"}, {"dataname": null, "fields": [{"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "firm_name"}, {"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "attorney_signature"}, {"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "attorney_number"}, {"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "attorney_street_address"}, {"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "attorney_city_state_zip"}, {"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "attorney_phone_number"}, {"choices": [], "composed_values": [], "datatype": "email", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "attorney_email_address"}, {"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "attorney_printed_name"}], "invisible_logic": null, "is_invisible_logic_question": false, "is_repeating_question": false, "title": "Attorney Information"}, {"dataname": null, "fields": [{"choices": [], "composed_values": [], "datatype": "date", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "date_filed"}, {"choices": [], "composed_values": [], "datatype": "date", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "date_served_by_iefs"}, {"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "person_served_by_iefs_name"}, {"choices": [], "composed_values": [], "datatype": "email", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "person_served_by_iefs_email"}, {"choices": [], "composed_values": [], "datatype": "date", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "date_served_by_mail"}, {"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "person_served_by_mail_address"}, {"choices": [], "composed_values": [], "datatype": "email", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "person_served_email_1"}, {"choices": [], "composed_values": [], "datatype": "text", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "person_served_mailing_address_1"}, {"choices": ["Electronic", "Mail"], "composed_values": [], "datatype": "dropdown", "has_valid_reference_repeating_question": false, "is_valid": true, "variable_name": "service_method"}], "invisible_logic": null, "is_invisible_logic_question": false, "is_repeating_question": false, "title": "Service of Process"}], "sections": [], "settings": {"access_permissions": {"allowed_email_addresses": [], "allowed_email_domains": [], "is_public": true, "single_use": false}, "custom_css_link": "", "custom_messages": {"continue_later_email_body": "To resume your workflow,", "continue_later_email_link_text": "click here", "continue_later_email_signature": "", "continue_later_email_title": "Your workflow", "continue_later_link_text": "Save link to continue later", "continue_later_message": "Enter your email below, and we'll send you a link to continue this workflow.", "continue_later_title": "Save and continue later", "document_completion_message": "Here are your documents!", "docusign_email_body": "Please DocuSign ${template_variables.docusign_file_names}\n\nThank You, ${template_variables.organization_name}", "docusign_email_subject": "Complete with DocuSign: ${template_variables.docusign_file_count} Documents from ${template_variables.organization_name}", "email_body": "Thank you for taking the time to fill everything out!", "email_not_sent_message": "Your information was not submitted.", "email_sent_message": "Thank you. Your information has been submitted.", "email_subject": "Here are your documents!", "final_page_email_body": "Your documents ${template_variables.file_names}, are attached", "final_page_email_subject": "${template_variables.file_names}", "hidden_document_completion_message": "Ok, all done."}, "documents_emailed": false, "email_docx": false, "email_file_uploads": false, "email_recipients": [], "hide_documents_from_user": false, "include_continue_later_link": false, "integrations": {}, "language": "", "skip_final_review_page": false}, "version": 2}
+---
+attachment:
+  docx template file: Petition_for_preliminary_orders_of_custody_support_property_2024_blueprint_20250812_082511.docx
+  filename: Petition For Preliminary Orders Of Custody Support Property 2024
+  name: Petition For Preliminary Orders Of Custody Support Property 2024
+  variable name: Petition_for_preliminary_orders_of_custody_support_property_2024
+question metadata:
+  id: a391b772-4bbc-4534-8910-5ee60c355888
+---
+code: hsl_attachments = [Petition_for_preliminary_orders_of_custody_support_property_2024]
+need:
+- hsl_review_answers
+only sets:
+- hsl_attachments
+---
+code: |-
+  x.value = DAEmpty(str=f'[VARIABLE `{x.instanceName}` NOT FOUND]')
+  define(x.instanceName, x.value)
+field: x.value
+generic object: DACatchAll
+---
+code: template_variables = TemplateVariables()
+only sets:
+- template_variables
+---
+content: Your documents ${template_variables.file_names}, are attached
+subject: ${template_variables.file_names}
+template: hsl_final_page_email_template
+---
+allow downloading: true
+attachment code: generate_attachments_for_display(hsl_attachments)
+email template: hsl_final_page_email_template
+event: hsl_final_screen
+mandatory: true
+need:
+- hsl_attachments
+question: Here are your documents!
+under: |-
+  % if is_within_bundle():
+  [Return to bundle overview](${get_bundle_page_url()}){: .btn .btn-primary .btn-da .float-right}
+  % endif
