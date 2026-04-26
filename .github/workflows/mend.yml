@@ -1,0 +1,50 @@
+name: "Mend Security Scan"
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+  schedule:
+    - cron: '0 6 * * 1'
+
+jobs:
+  mend:
+    name: Mend SCA Scan
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f setup.py ] || [ -f pyproject.toml ]; then pip install -e .; fi
+
+      - name: Run Mend Unified Agent
+        env:
+          WS_APIKEY: ${{ secrets.MEND_API_KEY }}
+          WS_USERKEY: ${{ secrets.MEND_USER_KEY }}
+          WS_PRODUCTNAME: ${{ github.repository }}
+          WS_PROJECTNAME: ${{ github.repository }}
+          WS_WSS_URL: https://saas.mend.io/agent
+        run: |
+          AGENT_VERSION=24.4.1
+          curl -fsSLO "https://unified-agent.s3.amazonaws.com/wss-unified-agent-${AGENT_VERSION}.jar"
+          curl -fsSLO "https://unified-agent.s3.amazonaws.com/wss-unified-agent-${AGENT_VERSION}.jar.sha256"
+          sha256sum --check "wss-unified-agent-${AGENT_VERSION}.jar.sha256"
+          java -jar "wss-unified-agent-${AGENT_VERSION}.jar"
